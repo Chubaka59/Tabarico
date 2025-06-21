@@ -67,29 +67,6 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserByEmailTest() {
-        //GIVEN this should return a user
-        User expectedUser = new User();
-        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(expectedUser));
-
-        //WHEN we try to get this user
-        User actualUser = userService.getUserByUsername("testUsername");
-
-        //THEN userRepository.findByUsername is called and we get the correct return
-        assertEquals(expectedUser, actualUser);
-        verify(userRepository, times(1)).findUserByUsername(anyString());
-    }
-
-    @Test
-    public void getUserByEmailWhenUserIsNotFoundTest() {
-        //GIVEN this should not find a user
-        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.empty());
-
-        //WHEN we try to get this user THEN an exception is thrown
-        assertThrows(UserNotFoundException.class, () -> userService.getUserByUsername("testUsername"));
-    }
-
-    @Test
     public void addUserTest() {
         //GIVEN the user we would add doesn't exist
         when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.empty());

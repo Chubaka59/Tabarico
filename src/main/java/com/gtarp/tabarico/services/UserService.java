@@ -20,13 +20,6 @@ public interface UserService {
     User getUserById(int id);
 
     /**
-     * get a user by its username
-     * @param username the username of the user
-     * @return a user
-     */
-    User getUserByUsername(String username);
-
-    /**
      * add a user in database
      * @param userDto the information of the user we would add
      * @return the user added

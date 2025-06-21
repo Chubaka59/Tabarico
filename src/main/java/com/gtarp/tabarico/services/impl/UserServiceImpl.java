@@ -30,11 +30,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUsername(String username) {
-        return userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
-    }
-
-    @Override
     public User addUser(UserDto userDto) {
         Optional<User> existingUser = userRepository.findUserByUsername(userDto.getUsername());
         if (existingUser.isPresent()) {
