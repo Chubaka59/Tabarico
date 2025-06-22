@@ -38,7 +38,7 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="row"><h2>Liste des produits</h2></div>
-        <a href="/addUser" class="btn btn-primary btn-sm">Ajouter un utilisateur</a>
+        <a href="/configuration/addproduct" class="btn btn-primary btn-sm">Ajouter un produit</a>
         <div class="row container px-4 px-lg-5 my-5">
             <table class="table table-bordered">
                 <thead>
@@ -54,8 +54,8 @@
                     <td th:text="${product.cleanMoney}"></td>
                     <td th:text="${product.dirtyMoney}"></td>
                     <td style="width: 20%" class="text-center">
-                        <a th:href="@{/users/{id}(id=${product.id})}">Edit</a>&nbsp;|&nbsp;
-                        <a th:href="@{/users/{id}/delete(id=${product.id})}">Delete</a>
+                        <a th:href="@{/configuration/products/{id}(id=${product.id})}">Edit</a>&nbsp;|&nbsp;
+                        <a th:href="@{/configuration/products/{id}/delete(id=${product.id})}">Delete</a>
                     </td>
                 </tr>
                 </tbody>
@@ -81,8 +81,8 @@
                     <td th:text="${contract.company}"></td>
                     <td th:text="${contract.reduction} + ' %'"></td>
                     <td style="width: 20%" class="text-center">
-                        <a th:href="@{/users/{id}(id=${contract.id})}">Edit</a>&nbsp;|&nbsp;
-                        <a th:href="@{/users/{id}/delete(id=${contract.id})}">Delete</a>
+                        <a th:href="@{/configuration/contracts/{id}(id=${contract.id})}">Edit</a>&nbsp;|&nbsp;
+                        <a th:href="@{/configuration/contracts/{id}/delete(id=${contract.id})}">Delete</a>
                     </td>
                 </tr>
                 </tbody>

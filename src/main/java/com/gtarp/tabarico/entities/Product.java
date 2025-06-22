@@ -2,6 +2,8 @@ package com.gtarp.tabarico.entities;
 
 import com.gtarp.tabarico.dto.ProductDto;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,9 +20,11 @@ public class Product {
     private Integer id;
     @NotBlank
     private String name;
-    @NotBlank
+    @Min(1)
+    @Digits(integer = 3, fraction = 0)
     private Integer cleanMoney;
-    @NotBlank
+    @Min(1)
+    @Digits(integer = 3, fraction = 0)
     private Integer dirtyMoney;
 
     public Product(ProductDto productDto) {

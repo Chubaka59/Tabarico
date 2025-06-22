@@ -115,7 +115,7 @@ public class UserControllerTest {
     @Test
     public void showUpdatePageTest() {
         //GIVEN we should get this string and a user to update
-        String expectedString = "updateUserPage";
+        String expectedString = "modifyPassword";
         when(userService.getUserById(anyInt())).thenReturn(new User());
 
         //WHEN we call this method
@@ -143,7 +143,7 @@ public class UserControllerTest {
     @Test
     public void updateUserWhenErrorIsThrownTest() {
         //GIVEN an esxception should be thrown
-        String expectedString = "updateUserPage";
+        String expectedString = "modifyPassword";
         when(userService.updateUser(anyInt(), any(UserDto.class))).thenThrow(new RuntimeException());
         when(result.hasErrors()).thenReturn(false);
 
@@ -157,7 +157,7 @@ public class UserControllerTest {
 
     @Test
     public void updateUserWhenErrorInTheFormTest() {
-        String expectedString = "updateUserPage";
+        String expectedString = "modifyPassword";
         when(result.hasErrors()).thenReturn(true);
 
         //WHEN we try to update the user

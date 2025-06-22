@@ -44,12 +44,8 @@ public class User {
         this.phone = userDto.getPhone();
     }
 
-    public User update(UserDto userDto) {
-        this.username = userDto.getUsername();
+    public User updatePassword(UserDto userDto) {
         this.password = new BCryptPasswordEncoder().encode(userDto.getPassword());
-        this.lastName = userDto.getLastName();
-        this.firstName = userDto.getFirstName();
-        this.phone = userDto.getPhone();
         return this;
     }
 }

@@ -1,5 +1,6 @@
 package com.gtarp.tabarico.dto;
 
+import com.gtarp.tabarico.validation.PasswordModification;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +14,7 @@ public class UserDto {
     @NotBlank
     private String username;
     @NotBlank
+    @NotBlank(groups = PasswordModification.class)
     private String password;
     @NotBlank
     private String lastName;
