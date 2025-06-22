@@ -2,7 +2,7 @@ package com.gtarp.tabarico.entities;
 
 import com.gtarp.tabarico.dto.ContractDto;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,10 @@ public class Contract {
     private Integer id;
     @NotBlank
     private String company;
-    @NotBlank
+    @NotNull
+    @Min(0)
+    @Max(100)
+    @Digits(integer = 3, fraction = 0)
     private Integer reduction;
 
     public Contract(ContractDto contractDto) {

@@ -1,5 +1,6 @@
 package com.gtarp.tabarico.controllers;
 
+import com.gtarp.tabarico.dto.ContractDto;
 import com.gtarp.tabarico.dto.ProductDto;
 import com.gtarp.tabarico.services.ContractService;
 import com.gtarp.tabarico.services.ProductService;
@@ -35,7 +36,7 @@ public class ConfigurationController {
     @PostMapping("/configuration/products")
     public String addProduct(@Valid @ModelAttribute("productDto") ProductDto productDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("product", productDto);
+            model.addAttribute("products", productDto);
             return showAddProductPage(productDto);
         }
         try {
@@ -54,20 +55,68 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/products/{id}")
     public String showUpdateProductPage(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("product", productService.getProductById(id));
+        if(!model.containsAttribute("product")) {
+            model.addAttribute("product", productService.getProductById(id));
+        }
         return "updateProduct";
     }
 
     @PostMapping("/configuration/products/{id}")
     public String updateProduct(@PathVariable("id") Integer id, @Valid @ModelAttribute("productDto") ProductDto productDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            return showUpdateProductPage(id, model);
+            model.addAttribute("product", productDto);
+            return "updateProduct";
         }
         try {
             productService.updateProduct(id, productDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
             return showUpdateProductPage(id, model);
+        }
+    }
+
+    @GetMapping("/configuration/addContract")
+    public String showAddContractPage(ContractDto contractDto) {
+        return "addContract";
+    }
+
+    @PostMapping("/configuration/contracts")
+    public String addContract(@Valid @ModelAttribute("contractDto") ContractDto contractDto, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("contract", contractDto);
+            return showAddContractPage(contractDto);
+        }
+        try {
+            contractService.addContract(contractDto);
+            return getConfigurationPage(model);
+        } catch (Exception e) {
+            return showAddContractPage(contractDto);
+        }
+    }
+
+    @GetMapping("/configuration/contracts/{id}/delete")
+    public String deleteContract(@PathVariable Integer id, Model model) {
+        contractService.deleteContract(id);
+        return getConfigurationPage(model);
+    }
+
+    @GetMapping("/configuration/contracts/{id}")
+    public String showUpdateContractPage(@PathVariable Integer id, Model model) {
+        model.addAttribute("contract", contractService.getContractById(id));
+        return "updateContract";
+    }
+
+    @PostMapping("/configuration/contracts/{id}")
+    public String updateContract(@PathVariable("id") Integer id, @Valid @ModelAttribute("contractDto") ContractDto contractDto, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("contract", contractDto);
+            return "updateContract";
+        }
+        try {
+            contractService.updateContract(id, contractDto);
+            return getConfigurationPage(model);
+        } catch (Exception e) {
+            return showUpdateContractPage(id, model);
         }
     }
 }
