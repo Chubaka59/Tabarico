@@ -1,9 +1,11 @@
 package com.gtarp.tabarico.controllers;
 
+import com.gtarp.tabarico.dto.RoleDto;
 import com.gtarp.tabarico.dto.UserDto;
+import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.entities.User;
 import com.gtarp.tabarico.services.CrudService;
-import com.gtarp.tabarico.validation.PasswordModification;
+import com.gtarp.tabarico.validation.OnUpdate;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class UserController {
     @Autowired
     private CrudService<User, UserDto> userService;
+    @Autowired
+    private CrudService<Role, RoleDto> roleService;
 
     @GetMapping("/users")
     public String getUserListPage(Model model) {
@@ -27,7 +31,8 @@ public class UserController {
     }
 
     @GetMapping("/addUser")
-    public String showAddUserPage(UserDto userDto) {
+    public String showAddUserPage(UserDto userDto, Model model) {
+        model.addAttribute("roles", roleService.getAll());
         return "addUser";
     }
 
@@ -54,19 +59,20 @@ public class UserController {
     @GetMapping("/users/{id}")
     public String showUpdateUserPage(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("user", userService.getById(id));
-        return "modifyPassword";
+        model.addAttribute("roles", roleService.getAll());
+        return "updateUser";
     }
 
     @PostMapping("/users/{id}")
-    public String updateUser(@PathVariable("id") Integer id, @Validated(PasswordModification.class) @ModelAttribute("userDto") UserDto userDto, BindingResult result, Model model) {
+    public String updateUser(@PathVariable("id") Integer id, @Validated(OnUpdate.class) @ModelAttribute("userDto") UserDto userDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            return "modifyPassword";
+            return "updateUser";
         }
         try {
             userService.update(id, userDto);
             return getUserListPage(model);
         } catch (Exception e) {
-            return "modifyPassword";
+            return "updateUser";
         }
     }
 }

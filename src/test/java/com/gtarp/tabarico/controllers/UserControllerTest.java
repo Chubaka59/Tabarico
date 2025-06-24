@@ -1,6 +1,8 @@
 package com.gtarp.tabarico.controllers;
 
+import com.gtarp.tabarico.dto.RoleDto;
 import com.gtarp.tabarico.dto.UserDto;
+import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.entities.User;
 import com.gtarp.tabarico.services.CrudService;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,8 @@ public class UserControllerTest {
     private BindingResult result;
     @Mock
     private CrudService<User, UserDto> userService;
+    @Mock
+    private CrudService<Role, RoleDto> roleService;
 
     @Test
     public void getUserListPageTest() {
@@ -46,9 +50,10 @@ public class UserControllerTest {
     public void showAddUserPageTest() {
         //GIVEN we should get this string
         String expectedString = "addUser";
+        when(roleService.getAll()).thenReturn(new ArrayList<>());
 
         //WHEN we call the method
-        String actualString = userController.showAddUserPage(new UserDto());
+        String actualString = userController.showAddUserPage(new UserDto(), model);
 
         //THEN we get the correct return
         assertEquals(expectedString, actualString);
@@ -115,8 +120,9 @@ public class UserControllerTest {
     @Test
     public void showUpdatePageTest() {
         //GIVEN we should get this string and a user to update
-        String expectedString = "modifyPassword";
+        String expectedString = "updateUser";
         when(userService.getById(anyInt())).thenReturn(new User());
+        when(roleService.getAll()).thenReturn(new ArrayList<>());
 
         //WHEN we call this method
         String actualString = userController.showUpdateUserPage(anyInt(), model);
@@ -143,7 +149,7 @@ public class UserControllerTest {
     @Test
     public void updateUserWhenErrorIsThrownTest() {
         //GIVEN an esxception should be thrown
-        String expectedString = "modifyPassword";
+        String expectedString = "updateUser";
         when(userService.update(anyInt(), any(UserDto.class))).thenThrow(new RuntimeException());
         when(result.hasErrors()).thenReturn(false);
 
@@ -157,7 +163,7 @@ public class UserControllerTest {
 
     @Test
     public void updateUserWhenErrorInTheFormTest() {
-        String expectedString = "modifyPassword";
+        String expectedString = "updateUser";
         when(result.hasErrors()).thenReturn(true);
 
         //WHEN we try to update the user

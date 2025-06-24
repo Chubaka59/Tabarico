@@ -47,6 +47,7 @@
                     <th>Nom</th>
                     <th>Nom d'utilisateur</th>
                     <th>Telephone</th>
+                    <th>Role</th>
                     <th>Action</th>
                 </tr>
                 </thead>
@@ -56,6 +57,7 @@
                     <td th:text="${user.lastName}"></td>
                     <td th:text="${user.username}"></td>
                     <td th:text="${user.phone}"></td>
+                    <td th:text="${user.role.name}"></td>
                     <td style="width: 20%" class="text-center">
                         <a th:href="@{/users/{id}(id=${user.id})}">Edit</a>&nbsp;|&nbsp;
                         <a th:href="@{/users/{id}/delete(id=${user.id})}">Delete</a>

@@ -1,6 +1,7 @@
 package com.gtarp.tabarico.services;
 
 import com.gtarp.tabarico.dto.UserDto;
+import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.entities.User;
 import com.gtarp.tabarico.exception.UserAlreadyExistException;
 import com.gtarp.tabarico.exception.UserNotFoundException;
@@ -68,7 +69,7 @@ public class UserServiceTest {
     public void addUserTest() {
         //GIVEN the user we would add doesn't exist
         when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.empty());
-        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone");
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role());
         User user = new User();
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -83,7 +84,7 @@ public class UserServiceTest {
     public void addUserWhenUserAlreadyExistsTest() {
         //GIVEN the user we would add already exist
         User user = new User();
-        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone");
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role());
         when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(user));
 
         //WHEN we try to add the user THEN an exception is thrown
@@ -95,7 +96,7 @@ public class UserServiceTest {
         //GIVEN there is a user to update
         User existingUser = new User();
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(existingUser));
-        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone");
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role());
 
         //WHEN we try to update the user
         userService.update(1, userDto);

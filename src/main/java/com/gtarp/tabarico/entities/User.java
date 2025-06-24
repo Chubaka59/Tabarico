@@ -3,6 +3,7 @@ package com.gtarp.tabarico.entities;
 import com.gtarp.tabarico.dto.UserDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,7 @@ public class User implements UpdatableEntity<User, UserDto> {
     private Boolean admin;
     @ManyToOne
     @JoinColumn(name = "role_id")
+    @NotNull
     private Role role;
 
     public User(UserDto userDto) {
@@ -38,10 +40,18 @@ public class User implements UpdatableEntity<User, UserDto> {
         this.lastName = userDto.getLastName();
         this.firstName = userDto.getFirstName();
         this.phone = userDto.getPhone();
+        this.role = userDto.getRole();
     }
 
     public User update(UserDto userDto) {
-        this.password = new BCryptPasswordEncoder().encode(userDto.getPassword());
+        this.username = userDto.getUsername();
+        if(!userDto.getPassword().isBlank()) {
+            this.password = new BCryptPasswordEncoder().encode(userDto.getPassword());
+        }
+        this.lastName = userDto.getLastName();
+        this.firstName = userDto.getFirstName();
+        this.phone = userDto.getPhone();
+        this.role = userDto.getRole();
         return this;
     }
 }

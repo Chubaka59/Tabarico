@@ -1,4 +1,4 @@
 package com.gtarp.tabarico.validation;
 
-public interface PasswordModification {
+public interface OnUpdate {
 }
