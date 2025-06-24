@@ -2,8 +2,10 @@ package com.gtarp.tabarico.controllers;
 
 import com.gtarp.tabarico.dto.ContractDto;
 import com.gtarp.tabarico.dto.ProductDto;
+import com.gtarp.tabarico.dto.RoleDto;
 import com.gtarp.tabarico.entities.Contract;
 import com.gtarp.tabarico.entities.Product;
+import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.services.CrudService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,14 @@ public class ConfigurationController {
     private CrudService<Product, ProductDto> productService;
     @Autowired
     private CrudService<Contract, ContractDto> contractService;
+    @Autowired
+    private CrudService<Role, RoleDto> roleService;
 
     @GetMapping("/configuration")
     public String getConfigurationPage(Model model) {
         model.addAttribute("products", productService.getAll());
         model.addAttribute("contracts", contractService.getAll());
+        model.addAttribute("roles", roleService.getAll());
         return "configuration";
     }
 
@@ -118,6 +123,51 @@ public class ConfigurationController {
             return getConfigurationPage(model);
         } catch (Exception e) {
             return showUpdateContractPage(id, model);
+        }
+    }
+
+    @GetMapping("/configuration/addRole")
+    public String showAddRolePage(RoleDto roleDto) {
+        return "addRole";
+    }
+
+    @PostMapping("/configuration/roles")
+    public String addRole(@Valid @ModelAttribute("roleDto") RoleDto roleDto, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("role", roleDto);
+            return showAddRolePage(roleDto);
+        }
+        try {
+            roleService.insert(roleDto);
+            return getConfigurationPage(model);
+        } catch (Exception e) {
+            return showAddRolePage(roleDto);
+        }
+    }
+
+    @GetMapping("/configuration/roles/{id}/delete")
+    public String deleteRole(@PathVariable Integer id, Model model) {
+        roleService.delete(id);
+        return getConfigurationPage(model);
+    }
+
+    @GetMapping("/configuration/roles/{id}")
+    public String showUpdateRolePage(@PathVariable Integer id, Model model) {
+        model.addAttribute("contract", roleService.getById(id));
+        return "updateRole";
+    }
+
+    @PostMapping("/configuration/roles/{id}")
+    public String updateRole(@PathVariable("id") Integer id, @Valid @ModelAttribute("roleDto") RoleDto roleDto, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("role", roleDto);
+            return "updateRole";
+        }
+        try {
+            roleService.update(id, roleDto);
+            return getConfigurationPage(model);
+        } catch (Exception e) {
+            return showUpdateRolePage(id, model);
         }
     }
 }

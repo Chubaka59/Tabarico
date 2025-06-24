@@ -8,9 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Data
 @Table
@@ -30,11 +27,10 @@ public class User implements UpdatableEntity<User, UserDto> {
     private String firstName;
     @NotBlank
     private String phone;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    private Boolean admin;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     public User(UserDto userDto) {
         this.username = userDto.getUsername();

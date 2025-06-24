@@ -18,7 +18,7 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="/home">Acceuil</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="/users">Utilisateurs</a></li>
-                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/configuration">Configuration</a></li>
+                <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" href="/configuration">Configuration</a></li>
                 <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link active" href="/logout">Se deconnecter</a></li>
                 <li class="nav-item" sec:authorize="isAnonymous()"><a class="nav-link active" href="/login">Se connecter</a></li>
             </ul>
@@ -83,6 +83,35 @@
                     <td style="width: 20%" class="text-center">
                         <a th:href="@{/configuration/contracts/{id}(id=${contract.id})}">Edit</a>&nbsp;|&nbsp;
                         <a th:href="@{/configuration/contracts/{id}/delete(id=${contract.id})}">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${#fields.allErrors()}">
+                <div class="error" th:text="${error}"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row"><h2>Liste des roles</h2></div>
+        <a href="/configuration/addRole" class="btn btn-primary btn-sm">Ajouter un role</a>
+        <div class="row container px-4 px-lg-5 my-5">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Taux de redistribution</th>
+                    <th>Salaire</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="role : ${roles}">
+                    <td th:text="${role.name}"></td>
+                    <td th:text="${role.redistributionRate} + ' %'"></td>
+                    <td th:text="${role.salary}"></td>
+                    <td style="width: 20%" class="text-center">
+                        <a th:href="@{/configuration/roles/{id}(id=${role.id})}">Edit</a>&nbsp;|&nbsp;
+                        <a th:href="@{/configuration/roles/{id}/delete(id=${role.id})}">Delete</a>
                     </td>
                 </tr>
                 </tbody>

@@ -2,8 +2,10 @@ package com.gtarp.tabarico.controllers;
 
 import com.gtarp.tabarico.dto.ContractDto;
 import com.gtarp.tabarico.dto.ProductDto;
+import com.gtarp.tabarico.dto.RoleDto;
 import com.gtarp.tabarico.entities.Contract;
 import com.gtarp.tabarico.entities.Product;
+import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.services.CrudService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +34,8 @@ public class ConfigurationControllerTest {
     private CrudService<Product, ProductDto> productService;
     @Mock
     private CrudService<Contract, ContractDto> contractService;
+    @Mock
+    private CrudService<Role, RoleDto> roleService;
 
     @Test
     public void getConfigurationPageTest() {
@@ -39,6 +43,7 @@ public class ConfigurationControllerTest {
         String expectedString = "configuration";
         when(productService.getAll()).thenReturn(new ArrayList<>());
         when(contractService.getAll()).thenReturn(new ArrayList<>());
+        when(roleService.getAll()).thenReturn(new ArrayList<>());
 
         //WHEN we call this method
         String actualString = configurationController.getConfigurationPage(model);
@@ -176,8 +181,6 @@ public class ConfigurationControllerTest {
         verify(productService, times(1)).update(anyInt(), any(ProductDto.class));
     }
 
-    //*************************************
-
     @Test
     public void showAddContractPageTest() {
         //GIVEN we should get this string
@@ -305,6 +308,138 @@ public class ConfigurationControllerTest {
         //THEN we get the correct string
         assertEquals(expectedString, actualString);
         verify(contractService, times(1)).update(anyInt(), any(ContractDto.class));
+    }
+
+    //*****************************
+
+    @Test
+    public void showAddRolePageTest() {
+        //GIVEN we should get this string
+        String expectedString = "addRole";
+
+        //WHEN we call this method
+        String actualString = configurationController.showAddRolePage(new RoleDto());
+
+        //THEN we get the correct string
+        assertEquals(expectedString, actualString);
+    }
+
+    @Test
+    public void addRoleTest() {
+        //GIVEN we should get this string and a role should be added
+        String expectedString = "configuration";
+        when(roleService.insert(any(RoleDto.class))).thenReturn(new Role());
+        when(result.hasErrors()).thenReturn(false);
+        when(productService.getAll()).thenReturn(new ArrayList<>());
+        when(contractService.getAll()).thenReturn(new ArrayList<>());
+        when(roleService.getAll()).thenReturn(new ArrayList<>());
+
+        //WHEN we call this method
+        String actualString = configurationController.addRole(new RoleDto(), result, model);
+
+        //THEN we get the correct string and the product is added
+        assertEquals(expectedString, actualString);
+        verify(roleService).insert(any(RoleDto.class));
+    }
+
+    @Test
+    public void addRoleWhenErrorInTheFormTest() {
+        //GIVEN there is an error in the form
+        String expectedString = "addRole";
+        when(result.hasErrors()).thenReturn(true);
+
+        //WHEN we try to add a role
+        String actualString = configurationController.addRole(new RoleDto(), result, model);
+
+        //THEN we get the correct string and the role is not created
+        assertEquals(expectedString, actualString);
+        verify(roleService, times(0)).insert(any(RoleDto.class));
+    }
+
+    @Test
+    public void addRoleWhenAnExceptionIsThrownTest() {
+        //GIVEN an exception will be thrown
+        String expectedString = "addRole";
+        when(roleService.insert(any(RoleDto.class))).thenThrow(new RuntimeException());
+
+        //WHEN we try to add the role
+        String actualString = configurationController.addRole(new RoleDto(), result, model);
+
+        //THEN we get the correct string and the method to add a product has been called
+        assertEquals(expectedString, actualString);
+        verify(roleService).insert(any(RoleDto.class));
+    }
+
+    @Test
+    public void deleteRoleTest() {
+        //GIVEN we would try to delete a product
+        String expectedString = "configuration";
+        doNothing().when(roleService).delete(anyInt());
+
+        //WHEN we try to delete a role
+        String actualString = configurationController.deleteRole(1, model);
+
+        //THEN we get the correct string and the role is deleted
+        assertEquals(expectedString, actualString);
+        verify(roleService, times(1)).delete(anyInt());
+    }
+
+    @Test
+    public void showUpdateRolePageTest() {
+        //GIVEN we should get this string and get a role
+        String expectedString = "updateRole";
+        when(roleService.getById(anyInt())).thenReturn(new Role());
+
+        //WHEN we call the method
+        String actualString = configurationController.showUpdateRolePage(1, model);
+
+        //THEN we get the correct string and the informations of the role to update are called
+        assertEquals(expectedString, actualString);
+        verify(roleService, times(1)).getById(anyInt());
+    }
+
+    @Test
+    public void updateRoleTest() {
+        //GIVEN we should get this string and it should update the role
+        String expectedString = "configuration";
+        when(result.hasErrors()).thenReturn(false);
+        when(roleService.update(anyInt(), any(RoleDto.class))).thenReturn(new Role());
+
+        //WHEN we call this method
+        String actualString = configurationController.updateRole(1, new RoleDto(), result, model);
+
+        //THEN we get the correct string and the product has been updated
+        assertEquals(expectedString, actualString);
+        verify(roleService, times(1)).update(anyInt(), any(RoleDto.class));
+    }
+
+    @Test
+    public void updateRoleWhenErrorInTheFormTest() {
+        //GIVEN we should get this string as there is an error in the form
+        String expectedString = "updateRole";
+        when(result.hasErrors()).thenReturn(true);
+
+        //WHEN we call this method
+        String actualString = configurationController.updateRole(1, new RoleDto(), result, model);
+
+        //THEN we get the correct string and the role isn't updated
+        assertEquals(expectedString, actualString);
+        verify(roleService, times(0)).update(anyInt(), any(RoleDto.class));
+    }
+
+    @Test
+    public void updateRoleWhenAnExceptionIsThrownTest() {
+        //GIVEN an exception should be thrown
+        String expectedString = "updateRole";
+        when(result.hasErrors()).thenReturn(false);
+        when(roleService.update(anyInt(), any(RoleDto.class))).thenThrow(new RuntimeException());
+
+        //WHEN we call this method
+        String actualString = configurationController.updateRole(1, new RoleDto(), result, model);
+
+        //THEN we get the correct string
+        assertEquals(expectedString, actualString);
+        verify(roleService, times(1)).update(anyInt(), any(RoleDto.class));
     }
 
 }
