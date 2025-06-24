@@ -1,7 +1,8 @@
 package com.gtarp.tabarico.controllers;
 
 import com.gtarp.tabarico.dto.UserDto;
-import com.gtarp.tabarico.services.UserService;
+import com.gtarp.tabarico.entities.User;
+import com.gtarp.tabarico.services.CrudService;
 import com.gtarp.tabarico.validation.PasswordModification;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class UserController {
     @Autowired
-    private UserService userService;
+    private CrudService<User, UserDto> userService;
 
     @GetMapping("/users")
     public String getUserListPage(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("users", userService.getAll());
         return "userList";
     }
 
@@ -37,7 +38,7 @@ public class UserController {
             return "addUser";
         }
         try {
-            userService.addUser(userDto);
+            userService.insert(userDto);
             return getUserListPage(model);
         } catch (Exception e) {
             return "addUser";
@@ -46,13 +47,13 @@ public class UserController {
 
     @GetMapping("/users/{id}/delete")
     public String deleteUser(@PathVariable("id") Integer id, Model model) {
-        userService.deleteUser(id);
+        userService.delete(id);
         return getUserListPage(model);
     }
 
     @GetMapping("/users/{id}")
     public String showUpdateUserPage(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
+        model.addAttribute("user", userService.getById(id));
         return "modifyPassword";
     }
 
@@ -62,7 +63,7 @@ public class UserController {
             return "modifyPassword";
         }
         try {
-            userService.updateUser(id, userDto);
+            userService.update(id, userDto);
             return getUserListPage(model);
         } catch (Exception e) {
             return "modifyPassword";

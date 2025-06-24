@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Table
 @NoArgsConstructor
 @AllArgsConstructor
-public class Contract {
+public class Contract implements UpdatableEntity<Contract, ContractDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

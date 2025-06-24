@@ -2,8 +2,9 @@ package com.gtarp.tabarico.controllers;
 
 import com.gtarp.tabarico.dto.ContractDto;
 import com.gtarp.tabarico.dto.ProductDto;
-import com.gtarp.tabarico.services.ContractService;
-import com.gtarp.tabarico.services.ProductService;
+import com.gtarp.tabarico.entities.Contract;
+import com.gtarp.tabarico.entities.Product;
+import com.gtarp.tabarico.services.CrudService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,14 +18,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class ConfigurationController {
     @Autowired
-    private ProductService productService;
+    private CrudService<Product, ProductDto> productService;
     @Autowired
-    private ContractService contractService;
+    private CrudService<Contract, ContractDto> contractService;
 
     @GetMapping("/configuration")
     public String getConfigurationPage(Model model) {
-        model.addAttribute("products", productService.getAllProducts());
-        model.addAttribute("contracts", contractService.getAllContracts());
+        model.addAttribute("products", productService.getAll());
+        model.addAttribute("contracts", contractService.getAll());
         return "configuration";
     }
 
@@ -40,7 +41,7 @@ public class ConfigurationController {
             return showAddProductPage(productDto);
         }
         try {
-            productService.addProduct(productDto);
+            productService.insert(productDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
             return "addProduct";
@@ -49,14 +50,14 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/products/{id}/delete")
     public String deleteProduct(@PathVariable Integer id, Model model) {
-        productService.deleteProduct(id);
+        productService.delete(id);
         return getConfigurationPage(model);
     }
 
     @GetMapping("/configuration/products/{id}")
     public String showUpdateProductPage(@PathVariable("id") Integer id, Model model) {
         if(!model.containsAttribute("product")) {
-            model.addAttribute("product", productService.getProductById(id));
+            model.addAttribute("product", productService.getById(id));
         }
         return "updateProduct";
     }
@@ -68,7 +69,7 @@ public class ConfigurationController {
             return "updateProduct";
         }
         try {
-            productService.updateProduct(id, productDto);
+            productService.update(id, productDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
             return showUpdateProductPage(id, model);
@@ -87,7 +88,7 @@ public class ConfigurationController {
             return showAddContractPage(contractDto);
         }
         try {
-            contractService.addContract(contractDto);
+            contractService.insert(contractDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
             return showAddContractPage(contractDto);
@@ -96,13 +97,13 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/contracts/{id}/delete")
     public String deleteContract(@PathVariable Integer id, Model model) {
-        contractService.deleteContract(id);
+        contractService.delete(id);
         return getConfigurationPage(model);
     }
 
     @GetMapping("/configuration/contracts/{id}")
     public String showUpdateContractPage(@PathVariable Integer id, Model model) {
-        model.addAttribute("contract", contractService.getContractById(id));
+        model.addAttribute("contract", contractService.getById(id));
         return "updateContract";
     }
 
@@ -113,7 +114,7 @@ public class ConfigurationController {
             return "updateContract";
         }
         try {
-            contractService.updateContract(id, contractDto);
+            contractService.update(id, contractDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
             return showUpdateContractPage(id, model);

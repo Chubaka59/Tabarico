@@ -16,7 +16,7 @@ import java.util.Set;
 @Table
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User implements UpdatableEntity<User, UserDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -44,7 +44,7 @@ public class User {
         this.phone = userDto.getPhone();
     }
 
-    public User updatePassword(UserDto userDto) {
+    public User update(UserDto userDto) {
         this.password = new BCryptPasswordEncoder().encode(userDto.getPassword());
         return this;
     }

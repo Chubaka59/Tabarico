@@ -2,7 +2,7 @@ package com.gtarp.tabarico.controllers;
 
 import com.gtarp.tabarico.dto.UserDto;
 import com.gtarp.tabarico.entities.User;
-import com.gtarp.tabarico.services.UserService;
+import com.gtarp.tabarico.services.CrudService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,20 +26,20 @@ public class UserControllerTest {
     @Mock
     private BindingResult result;
     @Mock
-    private UserService userService;
+    private CrudService<User, UserDto> userService;
 
     @Test
     public void getUserListPageTest() {
         //GIVEN we should get this string and a list of users
         String expectedString = "userList";
-        when(userService.getAllUsers()).thenReturn(new ArrayList<>());
+        when(userService.getAll()).thenReturn(new ArrayList<>());
 
         //WHEN we call the methode
         String actualString = userController.getUserListPage(model);
 
         //THEN we get the correct return and the list is called
         assertEquals(expectedString, actualString);
-        verify(userService, times(1)).getAllUsers();
+        verify(userService, times(1)).getAll();
     }
 
     @Test
@@ -59,15 +59,15 @@ public class UserControllerTest {
         //GIVEN we would add a user
         String expectedString = "userList";
         when(result.hasErrors()).thenReturn(false);
-        when(userService.addUser(any(UserDto.class))).thenReturn(new User());
-        when(userService.getAllUsers()).thenReturn(new ArrayList<>());
+        when(userService.insert(any(UserDto.class))).thenReturn(new User());
+        when(userService.getAll()).thenReturn(new ArrayList<>());
 
         //WHEN we try to add a user
         String actualString = userController.addUser(new UserDto(), result, model);
 
         //THEN we get the correct string and the user is added
         assertEquals(expectedString, actualString);
-        verify(userService, times(1)).addUser(any(UserDto.class));
+        verify(userService, times(1)).insert(any(UserDto.class));
     }
 
     @Test
@@ -81,55 +81,55 @@ public class UserControllerTest {
 
         //THEN we get the correct string and the user is not created
         assertEquals(expectedString, actualString);
-        verify(userService, times(0)).addUser(any(UserDto.class));
+        verify(userService, times(0)).insert(any(UserDto.class));
     }
 
     @Test
     public void addUserWhenAnExceptionIsThrownTest() {
         //GIVEN an exception will be thrown
         String expectedString = "addUser";
-        when(userService.addUser(any(UserDto.class))).thenThrow(new RuntimeException());
+        when(userService.insert(any(UserDto.class))).thenThrow(new RuntimeException());
 
         //WHEN we try to add a user
         String actualString = userController.addUser(new UserDto(), result, model);
 
         //THEN we get the correct string
         assertEquals(expectedString, actualString);
-        verify(userService, times(1)).addUser(any(UserDto.class));
+        verify(userService, times(1)).insert(any(UserDto.class));
     }
 
     @Test
     public void deleteUserTest() {
         //GIVEN we would try to delete a user
         String expectedString = "userList";
-        doNothing().when(userService).deleteUser(anyInt());
+        doNothing().when(userService).delete(anyInt());
 
         //WHEN we try to delete a user
         String actualString = userController.deleteUser(anyInt(), model);
 
         //THEN the user is deleted and we get the correct string
         assertEquals(expectedString, actualString);
-        verify(userService, times(1)).deleteUser(anyInt());
+        verify(userService, times(1)).delete(anyInt());
     }
 
     @Test
     public void showUpdatePageTest() {
         //GIVEN we should get this string and a user to update
         String expectedString = "modifyPassword";
-        when(userService.getUserById(anyInt())).thenReturn(new User());
+        when(userService.getById(anyInt())).thenReturn(new User());
 
         //WHEN we call this method
         String actualString = userController.showUpdateUserPage(anyInt(), model);
 
         //THEN we get the correct string and a user to update
         assertEquals(expectedString, actualString);
-        verify(userService, times(1)).getUserById(anyInt());
+        verify(userService, times(1)).getById(anyInt());
     }
 
     @Test
     public void updateUserTest() {
         String expectedString = "userList";
-        when(userService.updateUser(anyInt(), any(UserDto.class))).thenReturn(new User());
+        when(userService.update(anyInt(), any(UserDto.class))).thenReturn(new User());
         when(result.hasErrors()).thenReturn(false);
 
         //WHEN we call this method
@@ -137,14 +137,14 @@ public class UserControllerTest {
 
         //THEN we get the correct string and the user is updated
         assertEquals(expectedString, actualString);
-        verify(userService, times(1)).updateUser(anyInt(), any(UserDto.class));
+        verify(userService, times(1)).update(anyInt(), any(UserDto.class));
     }
 
     @Test
     public void updateUserWhenErrorIsThrownTest() {
         //GIVEN an esxception should be thrown
         String expectedString = "modifyPassword";
-        when(userService.updateUser(anyInt(), any(UserDto.class))).thenThrow(new RuntimeException());
+        when(userService.update(anyInt(), any(UserDto.class))).thenThrow(new RuntimeException());
         when(result.hasErrors()).thenReturn(false);
 
         //WHEN we try to update a user
@@ -152,7 +152,7 @@ public class UserControllerTest {
 
         //THEN we get the correct String
         assertEquals(expectedString, actualString);
-        verify(userService, times(1)).updateUser(anyInt(), any(UserDto.class));
+        verify(userService, times(1)).update(anyInt(), any(UserDto.class));
     }
 
     @Test
@@ -165,6 +165,6 @@ public class UserControllerTest {
 
         //THEN we get the correct string and we don't update the user
         assertEquals(expectedString, actualString);
-        verify(userService, times(0)).updateUser(anyInt(), any(UserDto.class));
+        verify(userService, times(0)).update(anyInt(), any(UserDto.class));
     }
 }

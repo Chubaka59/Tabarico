@@ -6,9 +6,11 @@ import com.gtarp.tabarico.exception.UserAlreadyExistException;
 import com.gtarp.tabarico.exception.UserNotFoundException;
 import com.gtarp.tabarico.repositories.UserRepository;
 import com.gtarp.tabarico.services.impl.UserServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,16 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(SpringExtension.class)
 public class UserServiceTest {
-    @MockBean
-    private UserService userService;
-
+    @InjectMocks
+    private UserServiceImpl userService;
+    @Mock
     private final UserRepository userRepository = mock(UserRepository.class);
-
-    @BeforeEach
-    public void setUpPerTest() {
-        userService = new UserServiceImpl(userRepository);
-    }
 
     @Test
     public void getAllUsersTest() {
@@ -36,7 +34,7 @@ public class UserServiceTest {
         when(userRepository.findAll()).thenReturn(expectedUserList);
 
         //WHEN we call the method
-        List<User> actualUserList = userService.getAllUsers();
+        List<User> actualUserList = userService.getAll();
 
         //THEN the correct method is called and we get the correct return
         assertEquals(expectedUserList, actualUserList);
@@ -50,7 +48,7 @@ public class UserServiceTest {
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(expectedUser));
 
         //WHEN we try to get this user
-        User actualUser = userService.getUserById(1);
+        User actualUser = userService.getById(1);
 
         //THEN userRepository.findById is called and we get the correct return
         assertEquals(expectedUser, actualUser);
@@ -63,7 +61,7 @@ public class UserServiceTest {
         when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         //WHEN we try to get this user THEN an exception is thrown
-        assertThrows(UserNotFoundException.class, () -> userService.getUserById(1));
+        assertThrows(UserNotFoundException.class, () -> userService.getById(1));
     }
 
     @Test
@@ -75,7 +73,7 @@ public class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         //WHEN we try to add this user
-        userService.addUser(userDto);
+        userService.insert(userDto);
 
         //THEN userRepository.save is called
         verify(userRepository, times(1)).save(any(User.class));
@@ -89,7 +87,7 @@ public class UserServiceTest {
         when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(user));
 
         //WHEN we try to add the user THEN an exception is thrown
-        assertThrows(UserAlreadyExistException.class, () -> userService.addUser(userDto));
+        assertThrows(UserAlreadyExistException.class, () -> userService.insert(userDto));
     }
 
     @Test
@@ -100,7 +98,7 @@ public class UserServiceTest {
         UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone");
 
         //WHEN we try to update the user
-        userService.updateUser(1, userDto);
+        userService.update(1, userDto);
 
         //THEN userRepository.save is called
         verify(userRepository, times(1)).save(any(User.class));
@@ -114,7 +112,7 @@ public class UserServiceTest {
         doNothing().when(userRepository).delete(any(User.class));
 
         //WHEN we try to delete the user
-        userService.deleteUser(1);
+        userService.delete(1);
 
         //THEN userRepository.delete is called
         verify(userRepository, times(1)).delete(any(User.class));

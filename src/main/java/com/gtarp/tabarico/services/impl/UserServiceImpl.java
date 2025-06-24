@@ -5,49 +5,31 @@ import com.gtarp.tabarico.entities.User;
 import com.gtarp.tabarico.exception.UserAlreadyExistException;
 import com.gtarp.tabarico.exception.UserNotFoundException;
 import com.gtarp.tabarico.repositories.UserRepository;
-import com.gtarp.tabarico.services.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.gtarp.tabarico.services.AbstractCrudService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
-    @Autowired
-    private final UserRepository userRepository;
+public class UserServiceImpl extends AbstractCrudService<User, UserRepository, UserDto> {
+
+    public UserServiceImpl(UserRepository repository) {
+        super(repository);
+    }
+
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public User getById(Integer id) {
+        return this.repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
-    public User getUserById(int id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-    }
-
-    @Override
-    public User addUser(UserDto userDto) {
-        Optional<User> existingUser = userRepository.findUserByUsername(userDto.getUsername());
+    public User insert(UserDto userDto) {
+        Optional<User> existingUser = this.repository.findUserByUsername(userDto.getUsername());
         if (existingUser.isPresent()) {
             throw new UserAlreadyExistException(userDto.getUsername());
         }
         User newUser = new User(userDto);
-        return userRepository.save(newUser);
-    }
-
-    @Override
-    public User updateUser(int id, UserDto userDto) {
-        User updateduser = getUserById(id).updatePassword(userDto);
-        return userRepository.save(updateduser);
-    }
-
-    @Override
-    public void deleteUser(int id) {
-        User user = getUserById(id);
-        userRepository.delete(user);
+        return this.repository.save(newUser);
     }
 }

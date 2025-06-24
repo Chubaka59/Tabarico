@@ -6,9 +6,11 @@ import com.gtarp.tabarico.exception.ProductAlreadyExistException;
 import com.gtarp.tabarico.exception.ProductNotFoundException;
 import com.gtarp.tabarico.repositories.ProductRepository;
 import com.gtarp.tabarico.services.impl.ProductServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,16 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(SpringExtension.class)
 public class ProductServiceTest {
-    @MockBean
-    private ProductService productService;
-
+    @InjectMocks
+    private ProductServiceImpl productService;
+    @Mock
     private final ProductRepository productRepository = mock(ProductRepository.class);
-
-    @BeforeEach
-    public void setUpPerTest() {
-        productService = new ProductServiceImpl(productRepository);
-    }
 
     @Test
     public void getAllProductsTest() {
@@ -36,7 +34,7 @@ public class ProductServiceTest {
         when(productRepository.findAll()).thenReturn(expectedProductList);
 
         //WHEN we call the method
-        List<Product> actualProductList = productService.getAllProducts();
+        List<Product> actualProductList = productService.getAll();
 
         //THEN the correct method is called and we get the correct return
         assertEquals(expectedProductList, actualProductList);
@@ -50,7 +48,7 @@ public class ProductServiceTest {
         when(productRepository.findById(anyInt())).thenReturn(Optional.of(expectedProduct));
 
         //WHEN we try to get this product
-        Product actualProduct = productService.getProductById(1);
+        Product actualProduct = productService.getById(1);
 
         //THEN productRepository.findById is called and we get the correct return
         assertEquals(expectedProduct, actualProduct);
@@ -63,7 +61,7 @@ public class ProductServiceTest {
         when(productRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         //WHEN we try to get this product THEN an exception is thrown
-        assertThrows(ProductNotFoundException.class, () -> productService.getProductById(1));
+        assertThrows(ProductNotFoundException.class, () -> productService.getById(1));
     }
 
     @Test
@@ -75,7 +73,7 @@ public class ProductServiceTest {
         when(productRepository.save(any(Product.class))).thenReturn(product);
 
         //WHEN we try to add this product
-        productService.addProduct(productDto);
+        productService.insert(productDto);
 
         //THEN productRepository.save is called
         verify(productRepository, times(1)).save(any(Product.class));
@@ -89,7 +87,7 @@ public class ProductServiceTest {
         when(productRepository.findProductByName(anyString())).thenReturn(Optional.of(product));
 
         //WHEN we try to add the product THEN an exception is thrown
-        assertThrows(ProductAlreadyExistException.class, () -> productService.addProduct(productDto));
+        assertThrows(ProductAlreadyExistException.class, () -> productService.insert(productDto));
     }
 
     @Test
@@ -100,7 +98,7 @@ public class ProductServiceTest {
         ProductDto productDto = new ProductDto(1, "testProduct", 100, 50);
 
         //WHEN we try to update the product
-        productService.updateProduct(1, productDto);
+        productService.update(1, productDto);
 
         //THEN productRepository.save is called
         verify(productRepository, times(1)).save(any(Product.class));
@@ -114,7 +112,7 @@ public class ProductServiceTest {
         doNothing().when(productRepository).delete(any(Product.class));
 
         //WHEN we try to delete the product
-        productService.deleteProduct(1);
+        productService.delete(1);
 
         //THEN productRepository.delete is called
         verify(productRepository, times(1)).delete(any(Product.class));

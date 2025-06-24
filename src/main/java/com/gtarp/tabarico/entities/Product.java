@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Table
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class Product implements UpdatableEntity<Product, ProductDto> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

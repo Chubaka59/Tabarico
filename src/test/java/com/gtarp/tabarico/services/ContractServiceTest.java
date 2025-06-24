@@ -2,15 +2,15 @@ package com.gtarp.tabarico.services;
 
 import com.gtarp.tabarico.dto.ContractDto;
 import com.gtarp.tabarico.entities.Contract;
-import com.gtarp.tabarico.entities.Contract;
 import com.gtarp.tabarico.exception.ContractAlreadyExistException;
 import com.gtarp.tabarico.exception.ContractNotFoundException;
 import com.gtarp.tabarico.repositories.ContractRepository;
-import com.gtarp.tabarico.repositories.ContractRepository;
 import com.gtarp.tabarico.services.impl.ContractServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,16 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(SpringExtension.class)
 public class ContractServiceTest {
-    @MockBean
-    private ContractService contractService;
-
+    @InjectMocks
+    private ContractServiceImpl contractService;
+    @Mock
     private final ContractRepository contractRepository = mock(ContractRepository.class);
-
-    @BeforeEach
-    public void setUpPerTest() {
-        contractService = new ContractServiceImpl(contractRepository);
-    }
 
     @Test
     public void getAllContractsTest() {
@@ -38,7 +34,7 @@ public class ContractServiceTest {
         when(contractRepository.findAll()).thenReturn(expectedContractList);
 
         //WHEN we call the method
-        List<Contract> actualContractList = contractService.getAllContracts();
+        List<Contract> actualContractList = contractService.getAll();
 
         //THEN the correct method is called and we get the correct return
         assertEquals(expectedContractList, actualContractList);
@@ -52,7 +48,7 @@ public class ContractServiceTest {
         when(contractRepository.findById(anyInt())).thenReturn(Optional.of(expectedContract));
 
         //WHEN we try to get this contract
-        Contract actualContract = contractService.getContractById(1);
+        Contract actualContract = contractService.getById(1);
 
         //THEN contractRepository.findById is called and we get the correct return
         assertEquals(expectedContract, actualContract);
@@ -65,7 +61,7 @@ public class ContractServiceTest {
         when(contractRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         //WHEN we try to get this contract THEN an exception is thrown
-        assertThrows(ContractNotFoundException.class, () -> contractService.getContractById(1));
+        assertThrows(ContractNotFoundException.class, () -> contractService.getById(1));
     }
 
     @Test
@@ -77,7 +73,7 @@ public class ContractServiceTest {
         when(contractRepository.save(any(Contract.class))).thenReturn(contract);
 
         //WHEN we try to add this contract
-        contractService.addContract(contractDto);
+        contractService.insert(contractDto);
 
         //THEN contractRepository.save is called
         verify(contractRepository, times(1)).save(any(Contract.class));
@@ -91,7 +87,7 @@ public class ContractServiceTest {
         when(contractRepository.findContractByCompany(anyString())).thenReturn(Optional.of(contract));
 
         //WHEN we try to add the contract THEN an exception is thrown
-        assertThrows(ContractAlreadyExistException.class, () -> contractService.addContract(contractDto));
+        assertThrows(ContractAlreadyExistException.class, () -> contractService.insert(contractDto));
     }
 
     @Test
@@ -102,7 +98,7 @@ public class ContractServiceTest {
         ContractDto contractDto = new ContractDto(1, "testCompany", 10);
 
         //WHEN we try to update the contract
-        contractService.updateContract(1, contractDto);
+        contractService.update(1, contractDto);
 
         //THEN contractRepository.save is called
         verify(contractRepository, times(1)).save(any(Contract.class));
@@ -116,7 +112,7 @@ public class ContractServiceTest {
         doNothing().when(contractRepository).delete(any(Contract.class));
 
         //WHEN we try to delete the contract
-        contractService.deleteContract(1);
+        contractService.delete(1);
 
         //THEN contractRepository.delete is called
         verify(contractRepository, times(1)).delete(any(Contract.class));
