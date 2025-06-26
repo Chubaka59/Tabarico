@@ -42,31 +42,31 @@
   <div class="container">
 
     <div class="row">
-      <h2>Modifier d'un contrat</h2>
+      <h2>Ajout d'une vente exportateur</h2>
     </div>
 
     <div class="row">
-      <form action="#" th:action="@{/configuration/contracts/{id}(id=${contract.id})}" th:object="${contract}" method="post" class="form-horizontal" style="width: 100%">
+      <form action="#" th:action="@{/addExporterSale}" th:object="${exporterSaleDto}" method="post" class="form-horizontal" style="width: 100%">
 
         <div class="form-group">
-          <label for="company" class="col-sm-2 control-label">Entreprise</label>
+          <label for="quantity" class="col-sm-2 control-label">Quantité</label>
           <div class="col-sm-10">
-            <input type="text" th:field="*{company}" id="company" placeholder="Entreprise" class="col-4">
-            <p class="text-danger" th:if="${#fields.hasErrors('company')}" th:errors="*{company}"></p>
+            <input type="text" th:field="*{quantity}" id="quantity" placeholder="Quantité" class="col-4">
+            <p class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></p>
           </div>
         </div>
         <div class="form-group">
-          <label for="reduction" class="col-sm-2 control-label">Reduction</label>
+          <label for="level" class="col-sm-2 control-label">Niveau</label>
           <div class="col-sm-10">
-            <input type="text" th:field="*{reduction}" id="reduction" placeholder="Reduction" class="col-4">
-            <p class="text-danger" th:if="${#fields.hasErrors('reduction')}" th:errors="*{reduction}"></p>
+            <input type="text" th:field="*{level}" id="level" placeholder="Niveau" class="col-4">
+            <p class="text-danger" th:if="${#fields.hasErrors('level')}" th:errors="*{level}"></p>
           </div>
         </div>
 
         <div class="form-group">
           <div class="col-sm-12">
-            <a class="btn btn-danger btn-sm" href="/configuration">Annuler</a>
-            <input class="btn btn-primary btn-sm" type="submit" value="Mettra à jour">
+            <a class="btn btn-danger btn-sm" href="/home">Annuler</a>
+            <input class="btn btn-primary btn-sm" type="submit" value="Créer">
           </div>
         </div>
       </form>

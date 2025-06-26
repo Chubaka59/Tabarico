@@ -8,6 +8,7 @@
   <title>Tabarico - ajouter utilisateur</title>
   <!-- Core theme CSS (includes Bootstrap)-->
   <link href="/css/styles.css" rel="stylesheet" />
+  <script type="text/javascript" src="js/addCustomerSale.js"></script>
 </head>
 <body>
 <!-- Navigation-->
@@ -42,34 +43,59 @@
   <div class="container">
 
     <div class="row">
-      <h2>Modifier d'un contrat</h2>
+      <h2>Ajout d'une vente client</h2>
     </div>
 
     <div class="row">
-      <form action="#" th:action="@{/configuration/contracts/{id}(id=${contract.id})}" th:object="${contract}" method="post" class="form-horizontal" style="width: 100%">
+      <form action="#" th:action="@{/addCustomerSale}" th:object="${customerSaleDto}" method="post" class="form-horizontal" style="width: 100%">
 
         <div class="form-group">
-          <label for="company" class="col-sm-2 control-label">Entreprise</label>
+          <label for="product" class="col-sm-2 control-label">Produit</label>
           <div class="col-sm-10">
-            <input type="text" th:field="*{company}" id="company" placeholder="Entreprise" class="col-4">
-            <p class="text-danger" th:if="${#fields.hasErrors('company')}" th:errors="*{company}"></p>
+            <select id="product" class="col-4" th:field="*{product}" onchange="calculatePrice(this.form)">
+              <option th:each="product : ${products}" th:value="${product.id}" th:text="${product.name}" th:attr="cleanPrice=${product.cleanMoney}, dirtyPrice=${product.dirtyMoney}" ></option>
+            </select>
           </div>
         </div>
         <div class="form-group">
-          <label for="reduction" class="col-sm-2 control-label">Reduction</label>
+          <label for="typeOfSale" class="col-sm-2 control-label">Type de vente</label>
           <div class="col-sm-10">
-            <input type="text" th:field="*{reduction}" id="reduction" placeholder="Reduction" class="col-4">
-            <p class="text-danger" th:if="${#fields.hasErrors('reduction')}" th:errors="*{reduction}"></p>
+            <select id="typeOfSale" class="col-4" th:field="*{typeOfSale}" onchange="calculatePrice(this.form)">
+              <option th:each="typeOfSale : ${typeOfSales}" th:value="${typeOfSale.name()}" th:text="${typeOfSale.toString()}"></option>
+            </select>
           </div>
         </div>
+        <div class="form-group">
+          <label for="quantity" class="col-sm-2 control-label">Quantité</label>
+          <div class="col-sm-10">
+            <input type="number" th:field="*{quantity}" id="quantity" placeholder="Quantité" class="col-4" onchange="calculatePrice(this.form)" min="1" step="1">
+            <p class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="contract" class="col-sm-2 control-label">Contrat</label>
+          <div class="col-sm-10">
+            <select id="contract" class="col-4" th:field="*{contract}" onchange="calculatePrice(this.form)">
+              <option value="">Aucun</option>
+              <option th:each="contract : ${contracts}" th:value="${contract.id}" th:text="${contract.company}" th:attr="reduction=${contract.reduction}"></option>
+            </select>
+          </div>
+        </div>
+
 
         <div class="form-group">
           <div class="col-sm-12">
             <a class="btn btn-danger btn-sm" href="/configuration">Annuler</a>
-            <input class="btn btn-primary btn-sm" type="submit" value="Mettra à jour">
+            <input class="btn btn-primary btn-sm" type="submit" value="Créer">
           </div>
         </div>
       </form>
+    </div>
+    <div class="form-group">
+      <label for="totalPrice" class="col-sm-2 control-label">Prix Total</label>
+      <div class="col-sm-10">
+        <span id="totalPrice" class="col-4">0.00 €</span>
+      </div>
     </div>
   </div>
 </section>
