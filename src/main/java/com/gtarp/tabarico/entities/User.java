@@ -54,4 +54,8 @@ public class User implements UpdatableEntity<User, UserDto> {
         this.role = userDto.getRole();
         return this;
     }
+
+    public String toString() {
+        return firstName + " " + lastName;
+    }
 }

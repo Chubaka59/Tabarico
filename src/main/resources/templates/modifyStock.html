@@ -8,7 +8,7 @@
   <title>Tabarico - ajouter utilisateur</title>
   <!-- Core theme CSS (includes Bootstrap)-->
   <link href="/css/styles.css" rel="stylesheet" />
-  <script type="text/javascript" src="js/addCustomerSale.js"></script>
+  <script type="text/javascript" src="js/modifyStock.js"></script>
 </head>
 <body>
 <!-- Navigation-->
@@ -43,25 +43,31 @@
   <div class="container">
 
     <div class="row">
-      <h2>Ajout d'une vente client</h2>
+      <h2>Modification du stock</h2>
     </div>
 
     <div class="row">
-      <form action="#" th:action="@{/addCustomerSale}" th:object="${customerSaleDto}" method="post" class="form-horizontal" style="width: 100%">
+      <form action="#" th:action="@{/modifyStock}" th:object="${stockDto}" method="post" class="form-horizontal" style="width: 100%">
 
         <div class="form-group">
           <label for="product" class="col-sm-2 control-label">Produit</label>
           <div class="col-sm-10">
-            <select id="product" class="col-4" th:field="*{product}" onchange="calculatePrice(this.form)">
-              <option th:each="product : ${products}" th:value="${product.id}" th:text="${product.name}" th:attr="cleanPrice=${product.cleanMoney}, dirtyPrice=${product.dirtyMoney}" ></option>
+            <select id="product" class="col-4" th:field="*{product}" onchange="showStock(this)">
+              <option th:each="product : ${products}" th:value="${product.id}" th:text="${product.name}" th:attr="stock=${product.stock}"></option>
             </select>
           </div>
         </div>
         <div class="form-group">
-          <label for="typeOfSale" class="col-sm-2 control-label">Type de vente</label>
+          <label for="actualStock" class="col-sm-2 control-label">Stock actuel</label>
           <div class="col-sm-10">
-            <select id="typeOfSale" class="col-4" th:field="*{typeOfSale}" onchange="calculatePrice(this.form)">
-              <option th:each="typeOfSale : ${typeOfSales}" th:value="${typeOfSale.name()}" th:text="${typeOfSale.toString()}"></option>
+            <span id="actualStock" class="col-4">0</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="operationStock" class="col-sm-2 control-label">Type d'operation</label>
+          <div class="col-sm-10">
+            <select id="operationStock" class="col-4" th:field="*{operationStock}">
+              <option th:each="operationStock : ${operationStocks}" th:value="${operationStock.name()}" th:text="${operationStock.toString()}"></option>
             </select>
           </div>
         </div>
@@ -72,29 +78,51 @@
             <p class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></p>
           </div>
         </div>
-        <div class="form-group">
-          <label for="contract" class="col-sm-2 control-label">Contrat</label>
-          <div class="col-sm-10">
-            <select id="contract" class="col-4" th:field="*{contract}" onchange="calculatePrice(this.form)">
-              <option value="">Aucun</option>
-              <option th:each="contract : ${contracts}" th:value="${contract.id}" th:text="${contract.company}" th:attr="reduction=${contract.reduction}"></option>
-            </select>
-          </div>
-        </div>
 
 
         <div class="form-group">
           <div class="col-sm-12">
-            <a class="btn btn-danger btn-sm" href="/configuration">Annuler</a>
+            <a class="btn btn-danger btn-sm" href="/home">Annuler</a>
             <input class="btn btn-primary btn-sm" type="submit" value="Créer">
           </div>
         </div>
       </form>
     </div>
-    <div class="form-group">
-      <label for="totalPrice" class="col-sm-2 control-label">Prix Total</label>
-      <div class="col-sm-10">
-        <span id="totalPrice" class="col-4">0.00 €</span>
+  </div>
+  <br/>
+  <div class="container">
+    <label for="date">Date</label>
+    <input type="date" id="date" name="date" th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+
+    <h2>Historique</h2>
+
+    <div class="row container px-4 px-lg-5 my-5">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type de mouvement</th>
+          <th>Produit</th>
+          <th>Type d'opération</th>
+          <th>Quantité</th>
+          <th>Stock après opération</th>
+          <th>Utilisateur</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="stock : ${stocks}">
+          <td th:text="${stock.date}"></td>
+          <td th:text="${stock.typeOfStockMovement.toString()}"></td>
+          <td th:text="${stock.product.name}"></td>
+          <td th:text="${stock.operationStock.toString()}"></td>
+          <td th:text="${stock.quantity}"></td>
+          <td th:text="${stock.stock}"></td>
+          <td th:text="${stock.user.toString()}"></td>
+        </tr>
+        </tbody>
+      </table>
+      <div th:if="${#fields.allErrors()}">
+        <div class="error" th:text="${error}"></div>
       </div>
     </div>
   </div>

@@ -4,9 +4,12 @@ import com.gtarp.tabarico.dto.ContractDto;
 import com.gtarp.tabarico.dto.ProductDto;
 import com.gtarp.tabarico.dto.accouting.CustomerSaleDto;
 import com.gtarp.tabarico.dto.accouting.ExporterSaleDto;
+import com.gtarp.tabarico.dto.accouting.OperationStock;
+import com.gtarp.tabarico.dto.accouting.StockDto;
 import com.gtarp.tabarico.entities.Contract;
 import com.gtarp.tabarico.entities.Product;
 import com.gtarp.tabarico.entities.accounting.TypeOfSale;
+import com.gtarp.tabarico.entities.accounting.TypeOfStockMovement;
 import com.gtarp.tabarico.services.AccountingService;
 import com.gtarp.tabarico.services.CrudService;
 import jakarta.validation.Valid;
@@ -17,8 +20,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.util.Optional;
 
 @Controller
 public class AccountingController {
@@ -67,6 +73,30 @@ public class AccountingController {
             return "home";
         } catch (Exception e) {
             return "addCustomerSale";
+        }
+    }
+
+    @GetMapping("/modifyStock")
+    public String getModifyStockPage(@RequestParam(required = false) Optional<LocalDate> date, StockDto stockDto, Model model) {
+        model.addAttribute("products", productService.getAll());
+        model.addAttribute("operationStocks", OperationStock.values());
+        LocalDate selectedDate = date.orElseGet(LocalDate::now);
+        model.addAttribute("stocks", accountingService.getStockListByDate(selectedDate));
+        return "modifyStock";
+    }
+
+    @PostMapping("/modifyStock")
+    public String modifyStock(@Valid @ModelAttribute("StockDto") StockDto stockDto, BindingResult result, Model model, Principal principal) {
+        if (result.hasErrors()) {
+            model.addAttribute("stockDto", stockDto);
+            return "modifyStock";
+        }
+        try {
+            stockDto.setTypeOfStockMovement(TypeOfStockMovement.stockModification);
+            accountingService.modifyStock(stockDto, principal);
+            return "home";
+        } catch (Exception e) {
+            return "modifyStock";
         }
     }
 }

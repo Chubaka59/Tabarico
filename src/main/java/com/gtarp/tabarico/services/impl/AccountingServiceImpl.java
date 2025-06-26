@@ -2,24 +2,30 @@ package com.gtarp.tabarico.services.impl;
 
 import com.gtarp.tabarico.dto.accouting.CustomerSaleDto;
 import com.gtarp.tabarico.dto.accouting.ExporterSaleDto;
+import com.gtarp.tabarico.dto.accouting.OperationStock;
+import com.gtarp.tabarico.dto.accouting.StockDto;
 import com.gtarp.tabarico.entities.User;
-import com.gtarp.tabarico.entities.accounting.CustomerSale;
-import com.gtarp.tabarico.entities.accounting.ExporterSale;
-import com.gtarp.tabarico.entities.accounting.TypeOfSale;
+import com.gtarp.tabarico.entities.accounting.*;
 import com.gtarp.tabarico.exception.UserNotFoundException;
+import com.gtarp.tabarico.repositories.ProductRepository;
 import com.gtarp.tabarico.repositories.UserRepository;
 import com.gtarp.tabarico.repositories.accounting.CustomerSaleRepository;
 import com.gtarp.tabarico.repositories.accounting.ExporterSaleRepository;
+import com.gtarp.tabarico.repositories.accounting.StockRepository;
 import com.gtarp.tabarico.services.AccountingService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.List;
 
 @Service
+@Transactional
 public class AccountingServiceImpl implements AccountingService {
     @Autowired
     private ExporterSaleRepository exporterSaleRepository;
@@ -27,6 +33,10 @@ public class AccountingServiceImpl implements AccountingService {
     private CustomerSaleRepository customerSaleRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private StockRepository stockRepository;
+    @Autowired
+    ProductRepository productRepository;
 
     @Override
     public ExporterSale createExporterSale(ExporterSaleDto exporterSaleDto, Principal principal) {
@@ -66,6 +76,13 @@ public class AccountingServiceImpl implements AccountingService {
         User user = userRepository.findUserByUsername(principal.getName()).orElseThrow(() -> new UserNotFoundException(principal.getName()));
         customerSale.setUser(user);
 
+        StockDto stockDto = new StockDto();
+        stockDto.setProduct(customerSaleDto.getProduct());
+        stockDto.setQuantity(customerSaleDto.getQuantity());
+        stockDto.setOperationStock(OperationStock.remove);
+        stockDto.setTypeOfStockMovement(TypeOfStockMovement.customerSale);
+        modifyStock(stockDto, principal);
+
         return customerSaleRepository.save(customerSale);
     }
 
@@ -82,5 +99,32 @@ public class AccountingServiceImpl implements AccountingService {
         }
 
         return BigDecimal.valueOf(pricePerUnit*customerSaleDto.getQuantity()).setScale(0, RoundingMode.HALF_UP);
+    }
+
+    public Stock modifyStock(StockDto stockDto, Principal principal) {
+        Stock stock = new Stock();
+        stock.setDate(LocalDate.now());
+        stock.setProduct(stockDto.getProduct());
+        stock.setOperationStock(stockDto.getOperationStock());
+        stock.setQuantity(stockDto.getQuantity());
+
+        int newQuantity;
+        if(stockDto.getOperationStock() != null && stockDto.getOperationStock().equals(OperationStock.add)) {
+            newQuantity = stockDto.getProduct().getStock() + stockDto.getQuantity();
+        } else {
+            newQuantity = stockDto.getProduct().getStock() - stockDto.getQuantity();
+        }
+        stock.setStock(newQuantity);
+        stockDto.getProduct().setStock(newQuantity);
+        User user = userRepository.findUserByUsername(principal.getName()).orElseThrow(() -> new UserNotFoundException(principal.getName()));
+        stock.setUser(user);
+        stock.setTypeOfStockMovement(stockDto.getTypeOfStockMovement());
+
+        productRepository.save(stock.getProduct());
+        return stockRepository.save(stock);
+    }
+
+    public List<Stock> getStockListByDate(LocalDate date) {
+        return stockRepository.getStockListByDate(date);
     }
 }

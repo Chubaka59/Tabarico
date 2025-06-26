@@ -26,6 +26,7 @@ public class Product implements UpdatableEntity<Product, ProductDto> {
     @Min(1)
     @Digits(integer = 3, fraction = 0)
     private Integer dirtyMoney;
+    private Integer stock;
 
     public Product(ProductDto productDto) {
         this.name = productDto.getName();
