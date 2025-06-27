@@ -1,0 +1,114 @@
+package com.gtarp.tabarico.services;
+
+import com.gtarp.tabarico.dto.accouting.CustomerSaleDto;
+import com.gtarp.tabarico.dto.accouting.ExporterSaleDto;
+import com.gtarp.tabarico.dto.accouting.OperationStock;
+import com.gtarp.tabarico.dto.accouting.StockDto;
+import com.gtarp.tabarico.entities.Contract;
+import com.gtarp.tabarico.entities.Product;
+import com.gtarp.tabarico.entities.User;
+import com.gtarp.tabarico.entities.accounting.*;
+import com.gtarp.tabarico.repositories.ProductRepository;
+import com.gtarp.tabarico.repositories.UserRepository;
+import com.gtarp.tabarico.repositories.accounting.CustomerSaleRepository;
+import com.gtarp.tabarico.repositories.accounting.ExporterSaleRepository;
+import com.gtarp.tabarico.repositories.accounting.StockRepository;
+import com.gtarp.tabarico.services.impl.AccountingServiceImpl;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(SpringExtension.class)
+public class AccountingServiceTest {
+    @InjectMocks
+    private AccountingServiceImpl accountingService;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private ExporterSaleRepository exporterSaleRepository;
+    @Mock
+    private CustomerSaleRepository customerSaleRepository;
+    @Mock
+    private ProductRepository productRepository;
+    @Mock
+    private StockRepository stockRepository;
+
+    @Test
+    public void createExporterSaleTest() {
+        //GIVEN a user should be found and an exportSale should be saved
+        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(new User()));
+        when(exporterSaleRepository.save(any(ExporterSale.class))).thenReturn(new ExporterSale());
+        ExporterSaleDto exporterSaleDto = new ExporterSaleDto();
+        exporterSaleDto.setUser(new User());
+        exporterSaleDto.setLevel(10);
+        exporterSaleDto.setQuantity(100);
+
+        //WHEN we create the exportersale
+        ExporterSale actualExporterSale = accountingService.createExporterSale(exporterSaleDto, "testUsername");
+
+        //THEN the exporterSale is saved with the correct data
+        verify(exporterSaleRepository).save(any(ExporterSale.class));
+        verify(userRepository).findUserByUsername(anyString());
+    }
+
+    @Test
+    public void createCustomerSaleTest() {
+        //GIVEN a user should be found and an CustomerSale should be saved
+        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(new User()));
+        when(customerSaleRepository.save(any(CustomerSale.class))).thenReturn(new CustomerSale());
+        when(productRepository.save(any(Product.class))).thenReturn(new Product());
+        when(stockRepository.save(any(Stock.class))).thenReturn(new Stock());
+        Product product = new Product(1, "testProduct", 100, 50, 1000);
+        CustomerSaleDto customerSaleDto = new CustomerSaleDto(1, Calendar.getInstance(), product, TypeOfSale.dirtyMoney, 100, new Contract());
+
+        //WHEN we create the customer Sale
+        CustomerSale customerSale = accountingService.createCustomerSale(customerSaleDto, "testUsername");
+
+        //THEN the user is found and the customerSale is saved
+        verify(customerSaleRepository, times(1)).save(any(CustomerSale.class));
+        verify(userRepository, times(2)).findUserByUsername(anyString());
+        verify(productRepository, times(1)).save(any(Product.class));
+        verify(stockRepository, times(1)).save(any(Stock.class));
+    }
+
+    @Test
+    public void modifyStockTest() {
+        //GIVEN this should save a stock and a product
+        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(new User()));
+        when(productRepository.save(any(Product.class))).thenReturn(new Product());
+        when(stockRepository.save(any(Stock.class))).thenReturn(new Stock());
+        Product product = new Product(1, "testProduct", 100, 50, 1000);
+        StockDto stockDto = new StockDto(1, product, 100, OperationStock.remove, TypeOfStockMovement.stockModification);
+
+        //WHEN we try to modify the stock
+        Stock stock = accountingService.modifyStock(stockDto, "testUsername");
+
+        //THEN we the product and the stock are saved
+        verify(stockRepository, times(1)).save(any(Stock.class));
+        verify(productRepository, times(1)).save(any(Product.class));
+    }
+
+    @Test
+    public void getStockListByDateTest() {
+        //GIVEN we should get a list of stock
+        when(stockRepository.getStockListByDate(any(LocalDate.class))).thenReturn(new ArrayList<>());
+
+        //WHEN we try to get the stock list
+        List<Stock> stockList = accountingService.getStockListByDate(LocalDate.now());
+
+        //THEN we get the stock list
+        verify(stockRepository, times(1)).getStockListByDate(any(LocalDate.class));
+    }
+}

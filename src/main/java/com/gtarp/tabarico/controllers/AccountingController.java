@@ -47,7 +47,7 @@ public class AccountingController {
             return "addExporterSale";
         }
         try {
-            accountingService.createExporterSale(exporterSaleDto, principal);
+            accountingService.createExporterSale(exporterSaleDto, principal.getName());
             return "home";
         } catch (Exception e) {
             return "addExporterSale";
@@ -69,7 +69,7 @@ public class AccountingController {
             return "addCustomerSale";
         }
         try {
-            accountingService.createCustomerSale(customerSaleDto, principal);
+            accountingService.createCustomerSale(customerSaleDto, principal.getName());
             return "home";
         } catch (Exception e) {
             return "addCustomerSale";
@@ -93,7 +93,7 @@ public class AccountingController {
         }
         try {
             stockDto.setTypeOfStockMovement(TypeOfStockMovement.stockModification);
-            accountingService.modifyStock(stockDto, principal);
+            accountingService.modifyStock(stockDto, principal.getName());
             return "home";
         } catch (Exception e) {
             return "modifyStock";

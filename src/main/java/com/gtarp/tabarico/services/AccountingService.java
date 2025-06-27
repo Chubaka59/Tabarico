@@ -7,13 +7,12 @@ import com.gtarp.tabarico.entities.accounting.CustomerSale;
 import com.gtarp.tabarico.entities.accounting.ExporterSale;
 import com.gtarp.tabarico.entities.accounting.Stock;
 
-import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
 public interface AccountingService {
-    ExporterSale createExporterSale(ExporterSaleDto exporterSaleDto, Principal principal);
-    CustomerSale createCustomerSale(CustomerSaleDto customerSaleDto, Principal principal);
-    Stock modifyStock(StockDto stockDto, Principal principal);
+    ExporterSale createExporterSale(ExporterSaleDto exporterSaleDto, String username);
+    CustomerSale createCustomerSale(CustomerSaleDto customerSaleDto, String username);
+    Stock modifyStock(StockDto stockDto, String username);
     List<Stock> getStockListByDate(LocalDate date);
 }

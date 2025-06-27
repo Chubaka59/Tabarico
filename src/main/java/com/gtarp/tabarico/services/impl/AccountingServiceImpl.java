@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
@@ -39,11 +38,11 @@ public class AccountingServiceImpl implements AccountingService {
     ProductRepository productRepository;
 
     @Override
-    public ExporterSale createExporterSale(ExporterSaleDto exporterSaleDto, Principal principal) {
+    public ExporterSale createExporterSale(ExporterSaleDto exporterSaleDto, String username) {
         ExporterSale exporterSale = new ExporterSale();
         exporterSale.setDate(Calendar.getInstance());
 
-        User user = userRepository.findUserByUsername(principal.getName()).orElseThrow(() -> new UserNotFoundException(principal.getName()));
+        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
         exporterSale.setUser(user);
         exporterSale.setQuantity(exporterSaleDto.getQuantity());
         exporterSale.setLevel(exporterSaleDto.getLevel());
@@ -65,7 +64,7 @@ public class AccountingServiceImpl implements AccountingService {
     }
 
     @Override
-    public CustomerSale createCustomerSale(CustomerSaleDto customerSaleDto, Principal principal) {
+    public CustomerSale createCustomerSale(CustomerSaleDto customerSaleDto, String username) {
         CustomerSale customerSale = new CustomerSale();
         customerSale.setDate(Calendar.getInstance());
         customerSale.setProduct(customerSaleDto.getProduct());
@@ -73,7 +72,7 @@ public class AccountingServiceImpl implements AccountingService {
         customerSale.setQuantity(customerSaleDto.getQuantity());
         customerSale.setContract(customerSaleDto.getContract());
         customerSale.setAmount(calculateCustomerSaleAmount(customerSaleDto));
-        User user = userRepository.findUserByUsername(principal.getName()).orElseThrow(() -> new UserNotFoundException(principal.getName()));
+        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
         customerSale.setUser(user);
 
         StockDto stockDto = new StockDto();
@@ -81,7 +80,7 @@ public class AccountingServiceImpl implements AccountingService {
         stockDto.setQuantity(customerSaleDto.getQuantity());
         stockDto.setOperationStock(OperationStock.remove);
         stockDto.setTypeOfStockMovement(TypeOfStockMovement.customerSale);
-        modifyStock(stockDto, principal);
+        modifyStock(stockDto, username);
 
         return customerSaleRepository.save(customerSale);
     }
@@ -101,7 +100,7 @@ public class AccountingServiceImpl implements AccountingService {
         return BigDecimal.valueOf(pricePerUnit*customerSaleDto.getQuantity()).setScale(0, RoundingMode.HALF_UP);
     }
 
-    public Stock modifyStock(StockDto stockDto, Principal principal) {
+    public Stock modifyStock(StockDto stockDto, String username) {
         Stock stock = new Stock();
         stock.setDate(LocalDate.now());
         stock.setProduct(stockDto.getProduct());
@@ -116,7 +115,7 @@ public class AccountingServiceImpl implements AccountingService {
         }
         stock.setStock(newQuantity);
         stockDto.getProduct().setStock(newQuantity);
-        User user = userRepository.findUserByUsername(principal.getName()).orElseThrow(() -> new UserNotFoundException(principal.getName()));
+        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
         stock.setUser(user);
         stock.setTypeOfStockMovement(stockDto.getTypeOfStockMovement());
 
