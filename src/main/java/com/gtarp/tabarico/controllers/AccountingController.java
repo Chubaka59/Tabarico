@@ -4,10 +4,10 @@ import com.gtarp.tabarico.dto.ContractDto;
 import com.gtarp.tabarico.dto.ProductDto;
 import com.gtarp.tabarico.dto.accouting.CustomerSaleDto;
 import com.gtarp.tabarico.dto.accouting.ExporterSaleDto;
-import com.gtarp.tabarico.dto.accouting.OperationStock;
 import com.gtarp.tabarico.dto.accouting.StockDto;
 import com.gtarp.tabarico.entities.Contract;
 import com.gtarp.tabarico.entities.Product;
+import com.gtarp.tabarico.entities.accounting.OperationStock;
 import com.gtarp.tabarico.entities.accounting.TypeOfSale;
 import com.gtarp.tabarico.entities.accounting.TypeOfStockMovement;
 import com.gtarp.tabarico.services.AccountingService;
@@ -98,5 +98,11 @@ public class AccountingController {
         } catch (Exception e) {
             return "modifyStock";
         }
+    }
+
+    @GetMapping("/accountingSummary")
+    public String getAccountingSummaryPage(Model model) {
+        model.addAttribute("accountingSummaryDtoList", accountingService.getAccountingSummaryListOfThisWeek());
+        return "accountingSummary";
     }
 }

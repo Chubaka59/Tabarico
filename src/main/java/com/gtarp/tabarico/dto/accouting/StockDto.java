@@ -1,6 +1,7 @@
 package com.gtarp.tabarico.dto.accouting;
 
 import com.gtarp.tabarico.entities.Product;
+import com.gtarp.tabarico.entities.accounting.OperationStock;
 import com.gtarp.tabarico.entities.accounting.TypeOfStockMovement;
 import jakarta.validation.constraints.Digits;
 import lombok.AllArgsConstructor;

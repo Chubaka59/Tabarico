@@ -1,12 +1,14 @@
 package com.gtarp.tabarico.services.impl;
 
+import com.gtarp.tabarico.dto.accouting.AccountingSummaryDto;
 import com.gtarp.tabarico.dto.accouting.CustomerSaleDto;
 import com.gtarp.tabarico.dto.accouting.ExporterSaleDto;
-import com.gtarp.tabarico.dto.accouting.OperationStock;
 import com.gtarp.tabarico.dto.accouting.StockDto;
 import com.gtarp.tabarico.entities.User;
 import com.gtarp.tabarico.entities.accounting.*;
+import com.gtarp.tabarico.exception.CustomerDirtySaleRateNotFoundException;
 import com.gtarp.tabarico.exception.UserNotFoundException;
+import com.gtarp.tabarico.repositories.CustomerDirtySaleRateRepository;
 import com.gtarp.tabarico.repositories.ProductRepository;
 import com.gtarp.tabarico.repositories.UserRepository;
 import com.gtarp.tabarico.repositories.accounting.CustomerSaleRepository;
@@ -19,9 +21,14 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -35,12 +42,14 @@ public class AccountingServiceImpl implements AccountingService {
     @Autowired
     private StockRepository stockRepository;
     @Autowired
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
+    @Autowired
+    private CustomerDirtySaleRateRepository customerDirtySaleRateRepository;
 
     @Override
     public ExporterSale createExporterSale(ExporterSaleDto exporterSaleDto, String username) {
         ExporterSale exporterSale = new ExporterSale();
-        exporterSale.setDate(Calendar.getInstance());
+        exporterSale.setDate(LocalDateTime.now());
 
         User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
         exporterSale.setUser(user);
@@ -66,7 +75,7 @@ public class AccountingServiceImpl implements AccountingService {
     @Override
     public CustomerSale createCustomerSale(CustomerSaleDto customerSaleDto, String username) {
         CustomerSale customerSale = new CustomerSale();
-        customerSale.setDate(Calendar.getInstance());
+        customerSale.setDate(LocalDateTime.now());
         customerSale.setProduct(customerSaleDto.getProduct());
         customerSale.setTypeOfSale(customerSaleDto.getTypeOfSale());
         customerSale.setQuantity(customerSaleDto.getQuantity());
@@ -125,5 +134,60 @@ public class AccountingServiceImpl implements AccountingService {
 
     public List<Stock> getStockListByDate(LocalDate date) {
         return stockRepository.getStockListByDate(date);
+    }
+
+    public List<AccountingSummaryDto> getAccountingSummaryListOfThisWeek() {
+        //On decoupe les semaines du dimanche au dimanche pour les semaines de compta
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).atTime(22, 0, 0, 0);
+        LocalDateTime endOfWeek = startOfWeek.plusWeeks(1).withHour(21).withMinute(59).withSecond(59).withNano(999999999);;
+
+        List<AccountingSummaryDto> accountingSummaryDtoList = new ArrayList<>();
+        List<User> userList = userRepository.findAll();
+        for (User user : userList) {
+            AccountingSummaryDto accountingSummaryDto = new AccountingSummaryDto();
+            accountingSummaryDto.setUser(user);
+
+            //On recupere toutes les ventes client pour le user et on groupe par type de vente
+            Map<TypeOfSale, Integer> salesByType = customerSaleRepository.findAllByUserAndDateBetween(user, startOfWeek, endOfWeek).stream()
+                    .collect(Collectors.groupingBy(CustomerSale::getTypeOfSale, Collectors.summingInt(customerSale -> customerSale.getAmount().intValueExact())));
+            accountingSummaryDto.setCustomerSalesCleanMoney(salesByType.get(TypeOfSale.cleanMoney));
+            accountingSummaryDto.setCustomerSalesDirtyMoney(salesByType.get(TypeOfSale.dirtyMoney));
+
+            //On fait la somme de toutes les ventes exportateurs
+            List<ExporterSale> exporterSaleList = exporterSaleRepository.findAllByUserAndDateBetween(user, startOfWeek, endOfWeek);
+            accountingSummaryDto.setExporterSalesMoney(exporterSaleList.stream()
+                    .mapToInt(exporterSale -> exporterSale.getCompanyAmount().intValueExact())
+                    .sum());
+            accountingSummaryDto.setExporterSalesQuantity(exporterSaleList.stream()
+                    .mapToInt(ExporterSale::getQuantity)
+                    .sum());
+
+            accountingSummaryDto.setQuota(user.isQuota());
+            accountingSummaryDto.setExporterQuota(user.isExporterQuota());
+
+            accountingSummaryDto.setCleanMoneySalary(calculateCleanMoneySalary(accountingSummaryDto.getExporterSalesMoney() != null ? accountingSummaryDto.getExporterSalesMoney() : 0, accountingSummaryDto.getCustomerSalesCleanMoney() != null ? accountingSummaryDto.getCustomerSalesCleanMoney() : 0, user));
+
+            //On calcule la prime en sale en fonction du taux de redistribution defini
+            int customerDirtySaleRate = customerDirtySaleRateRepository.findById(1).orElseThrow(() -> new CustomerDirtySaleRateNotFoundException(1)).getCustomerDirtySaleRate();
+            accountingSummaryDto.setDirtyMoneySalary((accountingSummaryDto.getCustomerSalesDirtyMoney() != null ? accountingSummaryDto.getCustomerSalesDirtyMoney() : 0) * customerDirtySaleRate / 100);
+
+            accountingSummaryDto.setHoliday(user.isHoliday());
+            accountingSummaryDto.setWarning1(user.isWarning1());
+            accountingSummaryDto.setWarning2(user.isWarning2());
+            accountingSummaryDto.setCleanMoneySalaryPreviousWeek(user.getCleanMoneySalaryPreviousWeek());
+            accountingSummaryDto.setDirtyMoneySalaryPreviousWeek(user.getDirtyMoneySalaryPreviousWeek());
+
+            accountingSummaryDtoList.add(accountingSummaryDto);
+        }
+        return accountingSummaryDtoList;
+    }
+
+    private int calculateCleanMoneySalary(int exporterSalesMoney, int customerSalesCleanMoney, User user) {
+        //Si le quota n'est pas effectué, la prime sera de 0
+        if (user.isQuota() && user.isExporterQuota()) {
+            return user.getRole().getSalary() + (exporterSalesMoney * user.getRole().getRedistributionRate() / 100) + (customerSalesCleanMoney * user.getRole().getRedistributionRate() / 100);
+        }
+        return 0;
     }
 }

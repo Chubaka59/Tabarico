@@ -1,9 +1,11 @@
 package com.gtarp.tabarico.controllers;
 
 import com.gtarp.tabarico.dto.ContractDto;
+import com.gtarp.tabarico.dto.CustomerDirtySaleRateDto;
 import com.gtarp.tabarico.dto.ProductDto;
 import com.gtarp.tabarico.dto.RoleDto;
 import com.gtarp.tabarico.entities.Contract;
+import com.gtarp.tabarico.entities.CustomerDirtySaleRate;
 import com.gtarp.tabarico.entities.Product;
 import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.services.CrudService;
@@ -25,12 +27,15 @@ public class ConfigurationController {
     private CrudService<Contract, ContractDto> contractService;
     @Autowired
     private CrudService<Role, RoleDto> roleService;
+    @Autowired
+    private CrudService<CustomerDirtySaleRate, CustomerDirtySaleRateDto> customerDirtySaleRateService;
 
     @GetMapping("/configuration")
     public String getConfigurationPage(Model model) {
         model.addAttribute("products", productService.getAll());
         model.addAttribute("contracts", contractService.getAll());
         model.addAttribute("roles", roleService.getAll());
+        model.addAttribute("customerDirtySaleRates", customerDirtySaleRateService.getAll());
         return "configuration";
     }
 
@@ -153,7 +158,7 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/roles/{id}")
     public String showUpdateRolePage(@PathVariable Integer id, Model model) {
-        model.addAttribute("contract", roleService.getById(id));
+        model.addAttribute("role", roleService.getById(id));
         return "updateRole";
     }
 
@@ -168,6 +173,26 @@ public class ConfigurationController {
             return getConfigurationPage(model);
         } catch (Exception e) {
             return showUpdateRolePage(id, model);
+        }
+    }
+
+    @GetMapping("/configuration/customerDirtySaleRates/{id}")
+    public String showUpdateCustomerDirtySaleRatePage(@PathVariable Integer id, Model model) {
+        model.addAttribute("customerDirtySaleRate", customerDirtySaleRateService.getById(id));
+        return "updateCustomerDirtySaleRate";
+    }
+
+    @PostMapping("/configuration/customerDirtySaleRates/{id}")
+    public String updateCustomerDirtySaleRate(@PathVariable("id") Integer id, @Valid @ModelAttribute("customerDirtySaleRateDto") CustomerDirtySaleRateDto customerDirtySaleRateDto, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("customerDirtySaleRate", customerDirtySaleRateDto);
+            return "updateCustomerDirtySaleRate";
+        }
+        try {
+            customerDirtySaleRateService.update(id, customerDirtySaleRateDto);
+            return getConfigurationPage(model);
+        } catch (Exception e) {
+            return showUpdateCustomerDirtySaleRatePage(id, model);
         }
     }
 }

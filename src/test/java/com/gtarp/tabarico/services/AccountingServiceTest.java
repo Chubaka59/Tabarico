@@ -1,13 +1,12 @@
 package com.gtarp.tabarico.services;
 
+import com.gtarp.tabarico.dto.accouting.AccountingSummaryDto;
 import com.gtarp.tabarico.dto.accouting.CustomerSaleDto;
 import com.gtarp.tabarico.dto.accouting.ExporterSaleDto;
-import com.gtarp.tabarico.dto.accouting.OperationStock;
 import com.gtarp.tabarico.dto.accouting.StockDto;
-import com.gtarp.tabarico.entities.Contract;
-import com.gtarp.tabarico.entities.Product;
-import com.gtarp.tabarico.entities.User;
+import com.gtarp.tabarico.entities.*;
 import com.gtarp.tabarico.entities.accounting.*;
+import com.gtarp.tabarico.repositories.CustomerDirtySaleRateRepository;
 import com.gtarp.tabarico.repositories.ProductRepository;
 import com.gtarp.tabarico.repositories.UserRepository;
 import com.gtarp.tabarico.repositories.accounting.CustomerSaleRepository;
@@ -20,12 +19,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -44,6 +46,8 @@ public class AccountingServiceTest {
     private ProductRepository productRepository;
     @Mock
     private StockRepository stockRepository;
+    @Mock
+    private CustomerDirtySaleRateRepository customerDirtySaleRateRepository;
 
     @Test
     public void createExporterSaleTest() {
@@ -110,5 +114,81 @@ public class AccountingServiceTest {
 
         //THEN we get the stock list
         verify(stockRepository, times(1)).getStockListByDate(any(LocalDate.class));
+    }
+
+    @Test
+    public void getAccountingSummaryListOfThisWeekWhenQuotaIsFalseTest() {
+        //GIVEN we should get a list of users, a list of customerSale, a list of exporterSale, a customerDirtySaleRate
+        Role role = new Role(1, "testRole", 40, 30000);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", false, role, false, false, false, 30000, 10000, false, false);
+        when(userRepository.findAll()).thenReturn(List.of(user));
+        Product product = new Product(1, "testProduct", 100, 50, 1000);
+        CustomerSale customerSale1 = new CustomerSale(1, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
+        CustomerSale customerSale2 = new CustomerSale(2, LocalDateTime.now(), product, TypeOfSale.dirtyMoney, 100, null, BigDecimal.valueOf(3500), user);
+        CustomerSale customerSale3 = new CustomerSale(3, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
+        when(customerSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(customerSale1, customerSale2, customerSale3));
+        ExporterSale exporterSale1 = new ExporterSale(1, LocalDateTime.now(), user, 1000, 50, BigDecimal.valueOf(100000), BigDecimal.valueOf(10000));
+        ExporterSale exporterSale2 = new ExporterSale(2, LocalDateTime.now(), user, 500, 10, BigDecimal.valueOf(50000), BigDecimal.valueOf(5000));
+        when(exporterSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(exporterSale1, exporterSale2));
+        CustomerDirtySaleRate customerDirtySaleRate = new CustomerDirtySaleRate(1, 35);
+        when(customerDirtySaleRateRepository.findById(anyInt())).thenReturn(Optional.of(customerDirtySaleRate));
+
+
+        //WHEN we call the method to get the list
+        List<AccountingSummaryDto> accountingSummaryDtoList = accountingService.getAccountingSummaryListOfThisWeek();
+
+        //THEN we get the correct Data
+        assertEquals(1, accountingSummaryDtoList.size());
+        assertEquals(user, accountingSummaryDtoList.get(0).getUser());
+        assertEquals(14000, accountingSummaryDtoList.get(0).getCustomerSalesCleanMoney());
+        assertEquals(3500, accountingSummaryDtoList.get(0).getCustomerSalesDirtyMoney());
+        assertEquals(15000, accountingSummaryDtoList.get(0).getExporterSalesMoney());
+        assertEquals(1500, accountingSummaryDtoList.get(0).getExporterSalesQuantity());
+        assertFalse(accountingSummaryDtoList.get(0).isQuota());
+        assertFalse(accountingSummaryDtoList.get(0).isExporterQuota());
+        //0 for salary has quota isn't checked
+        assertEquals(0, accountingSummaryDtoList.get(0).getCleanMoneySalary());
+        assertEquals(3500 * customerDirtySaleRate.getCustomerDirtySaleRate() / 100, accountingSummaryDtoList.get(0).getDirtyMoneySalary());
+        assertFalse(accountingSummaryDtoList.get(0).isHoliday());
+        assertFalse(accountingSummaryDtoList.get(0).isWarning1());
+        assertFalse(accountingSummaryDtoList.get(0).isWarning2());
+    }
+
+    @Test
+    public void getAccountingSummaryListOfThisWeekWhenQuotaIsTrueTest() {
+        //GIVEN we should get a list of users, a list of customerSale, a list of exporterSale, a customerDirtySaleRate
+        Role role = new Role(1, "testRole", 40, 30000);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, role, true, true, true, 30000, 10000, true, true);
+        when(userRepository.findAll()).thenReturn(List.of(user));
+        Product product = new Product(1, "testProduct", 100, 50, 1000);
+        CustomerSale customerSale1 = new CustomerSale(1, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
+        CustomerSale customerSale2 = new CustomerSale(2, LocalDateTime.now(), product, TypeOfSale.dirtyMoney, 100, null, BigDecimal.valueOf(3500), user);
+        CustomerSale customerSale3 = new CustomerSale(3, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
+        when(customerSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(customerSale1, customerSale2, customerSale3));
+        ExporterSale exporterSale1 = new ExporterSale(1, LocalDateTime.now(), user, 1000, 50, BigDecimal.valueOf(100000), BigDecimal.valueOf(10000));
+        ExporterSale exporterSale2 = new ExporterSale(2, LocalDateTime.now(), user, 500, 10, BigDecimal.valueOf(50000), BigDecimal.valueOf(5000));
+        when(exporterSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(exporterSale1, exporterSale2));
+        CustomerDirtySaleRate customerDirtySaleRate = new CustomerDirtySaleRate(1, 35);
+        when(customerDirtySaleRateRepository.findById(anyInt())).thenReturn(Optional.of(customerDirtySaleRate));
+
+
+        //WHEN we call the method to get the list
+        List<AccountingSummaryDto> accountingSummaryDtoList = accountingService.getAccountingSummaryListOfThisWeek();
+
+        //THEN we get the correct Data
+        assertEquals(1, accountingSummaryDtoList.size());
+        assertEquals(user, accountingSummaryDtoList.get(0).getUser());
+        assertEquals(14000, accountingSummaryDtoList.get(0).getCustomerSalesCleanMoney());
+        assertEquals(3500, accountingSummaryDtoList.get(0).getCustomerSalesDirtyMoney());
+        assertEquals(15000, accountingSummaryDtoList.get(0).getExporterSalesMoney());
+        assertEquals(1500, accountingSummaryDtoList.get(0).getExporterSalesQuantity());
+        assertTrue(accountingSummaryDtoList.get(0).isQuota());
+        assertTrue(accountingSummaryDtoList.get(0).isExporterQuota());
+        //0 for salary has quota isn't checked
+        assertEquals(41600, accountingSummaryDtoList.get(0).getCleanMoneySalary());
+        assertEquals(3500 * customerDirtySaleRate.getCustomerDirtySaleRate() / 100, accountingSummaryDtoList.get(0).getDirtyMoneySalary());
+        assertTrue(accountingSummaryDtoList.get(0).isHoliday());
+        assertTrue(accountingSummaryDtoList.get(0).isWarning1());
+        assertTrue(accountingSummaryDtoList.get(0).isWarning2());
     }
 }

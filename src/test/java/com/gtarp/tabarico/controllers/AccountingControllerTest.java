@@ -223,4 +223,18 @@ public class AccountingControllerTest {
         assertEquals(expectedString, actualString);
         verify(accountingService, times(1)).modifyStock(any(StockDto.class), anyString());
     }
+
+    @Test
+    public void getAccountingSummaryPageTest() {
+        //GIVEN we should get this string
+        String expectedString = "accountingSummary";
+        when(accountingService.getAccountingSummaryListOfThisWeek()).thenReturn(new ArrayList<>());
+
+        //WHEN we call this method
+        String actualString = accountingController.getAccountingSummaryPage(model);
+
+        //THEN we get the correct string and we get a list of accounting
+        assertEquals(expectedString, actualString);
+        verify(accountingService, times(1)).getAccountingSummaryListOfThisWeek();
+    }
 }

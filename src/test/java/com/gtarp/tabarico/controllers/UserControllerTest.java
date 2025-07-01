@@ -1,14 +1,19 @@
 package com.gtarp.tabarico.controllers;
 
+import com.gtarp.tabarico.dto.CheckboxUpdateRequestDto;
 import com.gtarp.tabarico.dto.RoleDto;
 import com.gtarp.tabarico.dto.UserDto;
 import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.entities.User;
+import com.gtarp.tabarico.exception.UserNotFoundException;
 import com.gtarp.tabarico.services.CrudService;
+import com.gtarp.tabarico.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,7 +33,7 @@ public class UserControllerTest {
     @Mock
     private BindingResult result;
     @Mock
-    private CrudService<User, UserDto> userService;
+    private UserService userService;
     @Mock
     private CrudService<Role, RoleDto> roleService;
 
@@ -172,5 +177,42 @@ public class UserControllerTest {
         //THEN we get the correct string and we don't update the user
         assertEquals(expectedString, actualString);
         verify(userService, times(0)).update(anyInt(), any(UserDto.class));
+    }
+
+    @Test
+    public void updateBooleanValueTest() {
+        //GIVEN we should update the value of a user and get the correct response
+        doNothing().when(userService).updateBooleanValue(new CheckboxUpdateRequestDto());
+
+        //WHEN we try to update the value
+        ResponseEntity<Void> actualResponse = userController.updateBooleanValue(new CheckboxUpdateRequestDto());
+
+        //THEN we get the correct response and the value has been updated
+        assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+        verify(userService, times(1)).updateBooleanValue(any(CheckboxUpdateRequestDto.class));
+    }
+
+    @Test
+    public void updateBooleanValueWhenUserNotFoundExceptionIsThrownTest() {
+        //GIVEN an exception should be thrown
+        doThrow(UserNotFoundException.class).when(userService).updateBooleanValue(new CheckboxUpdateRequestDto());
+
+        //WHEN we try to update the value
+        ResponseEntity<Void> actualResponse = userController.updateBooleanValue(new CheckboxUpdateRequestDto());
+
+        assertEquals(HttpStatus.NOT_FOUND, actualResponse.getStatusCode());
+        verify(userService, times(1)).updateBooleanValue(any(CheckboxUpdateRequestDto.class));
+    }
+
+    @Test
+    public void updateBooleanValueWhenExceptionIsThrownTest() {
+        //GIVEN an exception should be thrown
+        doThrow(RuntimeException.class).when(userService).updateBooleanValue(new CheckboxUpdateRequestDto());
+
+        //WHEN we try to update the value
+        ResponseEntity<Void> actualResponse = userController.updateBooleanValue(new CheckboxUpdateRequestDto());
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
+        verify(userService, times(1)).updateBooleanValue(any(CheckboxUpdateRequestDto.class));
     }
 }

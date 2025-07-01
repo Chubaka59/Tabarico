@@ -1,5 +1,6 @@
 package com.gtarp.tabarico.services;
 
+import com.gtarp.tabarico.dto.accouting.AccountingSummaryDto;
 import com.gtarp.tabarico.dto.accouting.CustomerSaleDto;
 import com.gtarp.tabarico.dto.accouting.ExporterSaleDto;
 import com.gtarp.tabarico.dto.accouting.StockDto;
@@ -15,4 +16,5 @@ public interface AccountingService {
     CustomerSale createCustomerSale(CustomerSaleDto customerSaleDto, String username);
     Stock modifyStock(StockDto stockDto, String username);
     List<Stock> getStockListByDate(LocalDate date);
+    List<AccountingSummaryDto> getAccountingSummaryListOfThisWeek();
 }

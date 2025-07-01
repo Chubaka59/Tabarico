@@ -19,6 +19,7 @@
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="/home">Acceuil</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="/addExporterSale">Vente exportateur</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="/addCustomerSale">Vente client</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/accountingSummary">Dashboard</a></li>
                 <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" href="/users">Utilisateurs</a></li>
                 <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" href="/modifyStock">Stock</a></li>
                 <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" href="/configuration">Configuration</a></li>
@@ -115,6 +116,29 @@
                     <td style="width: 20%" class="text-center">
                         <a th:href="@{/configuration/roles/{id}(id=${role.id})}">Edit</a>&nbsp;|&nbsp;
                         <a th:href="@{/configuration/roles/{id}/delete(id=${role.id})}">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${#fields.allErrors()}">
+                <div class="error" th:text="${error}"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row"><h2>Taux Vente Client Sale</h2></div>
+        <div class="row container px-4 px-lg-5 my-5">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Taux Vente Client Sale</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="customerDirtySaleRate : ${customerDirtySaleRates}">
+                    <td th:text="${customerDirtySaleRate.getCustomerDirtySaleRate()}"></td>
+                    <td style="width: 20%" class="text-center">
+                        <a th:href="@{/configuration/customerDirtySaleRates/{id}(id=${customerDirtySaleRate.id})}">Edit</a>
                     </td>
                 </tr>
                 </tbody>

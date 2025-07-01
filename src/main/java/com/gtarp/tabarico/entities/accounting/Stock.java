@@ -1,6 +1,5 @@
 package com.gtarp.tabarico.entities.accounting;
 
-import com.gtarp.tabarico.dto.accouting.OperationStock;
 import com.gtarp.tabarico.entities.Product;
 import com.gtarp.tabarico.entities.User;
 import jakarta.persistence.*;

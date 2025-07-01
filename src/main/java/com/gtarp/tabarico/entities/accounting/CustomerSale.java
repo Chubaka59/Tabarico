@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -20,7 +20,7 @@ public class CustomerSale {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Calendar date;
+    private LocalDateTime date;
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;

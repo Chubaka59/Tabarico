@@ -1,4 +1,4 @@
-package com.gtarp.tabarico.dto.accouting;
+package com.gtarp.tabarico.entities.accounting;
 
 public enum OperationStock {
     add ("Ajout"),

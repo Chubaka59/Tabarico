@@ -1,9 +1,11 @@
 package com.gtarp.tabarico.controllers;
 
 import com.gtarp.tabarico.dto.ContractDto;
+import com.gtarp.tabarico.dto.CustomerDirtySaleRateDto;
 import com.gtarp.tabarico.dto.ProductDto;
 import com.gtarp.tabarico.dto.RoleDto;
 import com.gtarp.tabarico.entities.Contract;
+import com.gtarp.tabarico.entities.CustomerDirtySaleRate;
 import com.gtarp.tabarico.entities.Product;
 import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.services.CrudService;
@@ -36,6 +38,8 @@ public class ConfigurationControllerTest {
     private CrudService<Contract, ContractDto> contractService;
     @Mock
     private CrudService<Role, RoleDto> roleService;
+    @Mock
+    private CrudService<CustomerDirtySaleRate, CustomerDirtySaleRateDto> customerDirtySaleRateService;
 
     @Test
     public void getConfigurationPageTest() {
@@ -44,6 +48,7 @@ public class ConfigurationControllerTest {
         when(productService.getAll()).thenReturn(new ArrayList<>());
         when(contractService.getAll()).thenReturn(new ArrayList<>());
         when(roleService.getAll()).thenReturn(new ArrayList<>());
+        when(customerDirtySaleRateService.getAll()).thenReturn(new ArrayList<>());
 
         //WHEN we call this method
         String actualString = configurationController.getConfigurationPage(model);
@@ -442,4 +447,59 @@ public class ConfigurationControllerTest {
         verify(roleService, times(1)).update(anyInt(), any(RoleDto.class));
     }
 
+    @Test
+    public void showUpdateCustomerDirtySaleRatePageTest() {
+        //GIVEN we should get this string and get a customerDirtySaleRate
+        String expectedString = "updateCustomerDirtySaleRate";
+        when(customerDirtySaleRateService.getById(anyInt())).thenReturn(new CustomerDirtySaleRate());
+
+        //WHEN we call this method
+        String actualString = configurationController.showUpdateCustomerDirtySaleRatePage(1, model);
+
+        //THEN we get the correct String and the CustomerDirtySaleRate
+        assertEquals(expectedString, actualString);
+        verify(customerDirtySaleRateService, times(1)).getById(anyInt());
+    }
+
+    @Test
+    public void updateCustomerDirtySaleRateTest() {
+        //GIVEN we should get this string and the customerDirtySaleRate updated
+        String expectedString = "configuration";
+        when(customerDirtySaleRateService.update(anyInt(), any(CustomerDirtySaleRateDto.class))).thenReturn(new CustomerDirtySaleRate());
+
+        //WHEN we try to update the customerDirtySaleRate
+        String actualString = configurationController.updateCustomerDirtySaleRate(1, new CustomerDirtySaleRateDto(), result, model);
+
+        //THEN we get the correct string and the customerDirtySaleRate is updated
+        assertEquals(expectedString, actualString);
+        verify(customerDirtySaleRateService, times(1)).update(anyInt(), any(CustomerDirtySaleRateDto.class));
+    }
+
+    @Test
+    public void updateCustomerDirtySaleRateWhenErrorInTheFormTest() {
+        //GIVEN there is an error in the form and we should get this string
+        String expectedString = "updateCustomerDirtySaleRate";
+        when(result.hasErrors()).thenReturn(true);
+
+        //WHEN we try to update the customerDirtySaleRate
+        String actualString = configurationController.updateCustomerDirtySaleRate(1, new CustomerDirtySaleRateDto(), result, model);
+
+        //THEN we get the correct Sting and the customerDirtySaleRate hasn't been updated
+        assertEquals(expectedString, actualString);
+        verify(customerDirtySaleRateService, times(0)).update(anyInt(), any(CustomerDirtySaleRateDto.class));
+    }
+
+    @Test
+    public void updateCustomerDirtySaleRateWhenExceptionIsThrownTest() {
+        //GIVEN we should get this string and an exception should be thrown
+        String expectedString = "updateCustomerDirtySaleRate";
+        when(customerDirtySaleRateService.update(anyInt(), any(CustomerDirtySaleRateDto.class))).thenThrow(new RuntimeException());
+
+        //WHEN we try to update the customerDirtySaleRate
+        String actualString = configurationController.updateCustomerDirtySaleRate(1, new CustomerDirtySaleRateDto(), result, model);
+
+        //THEN we get the correct String
+        assertEquals(expectedString, actualString);
+        verify(customerDirtySaleRateService, times(1)).update(anyInt(), any(CustomerDirtySaleRateDto.class));
+    }
 }

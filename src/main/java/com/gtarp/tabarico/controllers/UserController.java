@@ -1,26 +1,27 @@
 package com.gtarp.tabarico.controllers;
 
+import com.gtarp.tabarico.dto.CheckboxUpdateRequestDto;
 import com.gtarp.tabarico.dto.RoleDto;
 import com.gtarp.tabarico.dto.UserDto;
 import com.gtarp.tabarico.entities.Role;
-import com.gtarp.tabarico.entities.User;
+import com.gtarp.tabarico.exception.UserNotFoundException;
 import com.gtarp.tabarico.services.CrudService;
+import com.gtarp.tabarico.services.UserService;
 import com.gtarp.tabarico.validation.OnUpdate;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class UserController {
     @Autowired
-    private CrudService<User, UserDto> userService;
+    private UserService userService;
     @Autowired
     private CrudService<Role, RoleDto> roleService;
 
@@ -73,6 +74,18 @@ public class UserController {
             return getUserListPage(model);
         } catch (Exception e) {
             return "updateUser";
+        }
+    }
+
+    @PostMapping("/updateBoolean")
+    public ResponseEntity<Void> updateBooleanValue(@RequestBody CheckboxUpdateRequestDto checkboxUpdateRequestDto) {
+        try {
+            userService.updateBooleanValue(checkboxUpdateRequestDto);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

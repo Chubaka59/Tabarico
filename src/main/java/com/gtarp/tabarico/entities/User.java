@@ -28,11 +28,18 @@ public class User implements UpdatableEntity<User, UserDto> {
     private String firstName;
     @NotBlank
     private String phone;
-    private Boolean admin;
+    private Boolean admin = false;
     @ManyToOne
     @JoinColumn(name = "role_id")
     @NotNull
     private Role role;
+    private boolean holiday = false;
+    private boolean warning1 = false;
+    private boolean warning2 = false;
+    private Integer cleanMoneySalaryPreviousWeek;
+    private Integer dirtyMoneySalaryPreviousWeek;
+    private boolean quota = false;
+    private boolean exporterQuota = false;
 
     public User(UserDto userDto) {
         this.username = userDto.getUsername();

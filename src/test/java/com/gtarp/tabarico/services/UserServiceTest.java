@@ -1,5 +1,6 @@
 package com.gtarp.tabarico.services;
 
+import com.gtarp.tabarico.dto.CheckboxUpdateRequestDto;
 import com.gtarp.tabarico.dto.UserDto;
 import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.entities.User;
@@ -9,6 +10,9 @@ import com.gtarp.tabarico.repositories.UserRepository;
 import com.gtarp.tabarico.services.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -16,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -117,5 +122,31 @@ public class UserServiceTest {
 
         //THEN userRepository.delete is called
         verify(userRepository, times(1)).delete(any(User.class));
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("provideCheckboxUpdateRequestDtoForTest")
+    public void updateBooleanValueTest(CheckboxUpdateRequestDto checkboxUpdateRequestDto) {
+        //GIVEN we should get a user and save it
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, true, true, 30000, 10000, true, true);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        //WHEN we try to update the boolean value
+        userService.updateBooleanValue(checkboxUpdateRequestDto);
+
+        //THEN the user is saved
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    static Stream<Arguments> provideCheckboxUpdateRequestDtoForTest() {
+        return Stream.of(
+                Arguments.of(new CheckboxUpdateRequestDto(1, "quota", true)),
+                Arguments.of(new CheckboxUpdateRequestDto(1, "exporterQuota", true)),
+                Arguments.of(new CheckboxUpdateRequestDto(1, "holiday", true)),
+                Arguments.of(new CheckboxUpdateRequestDto(1, "warning1", true)),
+                Arguments.of(new CheckboxUpdateRequestDto(1, "warning2", true))
+        );
     }
 }
