@@ -47,7 +47,7 @@
     </div>
 
     <div class="row">
-      <form action="#" th:action="@{/configuration/roles/{id}(id=${role.id})}" th:object="${role}" method="post" class="form-horizontal" style="width: 100%">
+      <form action="#" th:action="@{/configuration/roles/{id}(id=${roleDto.id})}" th:object="${roleDto}" method="post" class="form-horizontal" style="width: 100%">
 
         <div class="form-group">
           <label for="name" class="col-sm-2 control-label">Nom</label>
@@ -57,16 +57,16 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="redistributionRate" class="col-sm-2 control-label">Taux de redistribution</label>
+          <label for="redistributionRate" class="col-sm-2 control-label">Taux de redistribution (en %)</label>
           <div class="col-sm-10">
-            <input type="text" th:field="*{redistributionRate}" id="redistributionRate" placeholder="Taux de redistribution" class="col-4">
+            <input type="number" th:field="*{redistributionRate}" id="redistributionRate" placeholder="Taux de redistribution" class="col-4">
             <p class="text-danger" th:if="${#fields.hasErrors('redistributionRate')}" th:errors="*{redistributionRate}"></p>
           </div>
         </div>
         <div class="form-group">
           <label for="salary" class="col-sm-2 control-label">Salaire</label>
           <div class="col-sm-10">
-            <input type="text" th:field="*{salary}" id="salary" placeholder="Salaire" class="col-4">
+            <input type="number" th:field="*{salary}" id="salary" placeholder="Salaire" class="col-4">
             <p class="text-danger" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></p>
           </div>
         </div>

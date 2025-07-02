@@ -59,14 +59,14 @@
         <div class="form-group">
           <label for="cleanMoney" class="col-sm-2 control-label">Prix argent propre</label>
           <div class="col-sm-10">
-            <input type="text" th:field="*{cleanMoney}" id="cleanMoney" placeholder="Prix argent propre" class="col-4">
+            <input type="number" th:field="*{cleanMoney}" id="cleanMoney" placeholder="Prix argent propre" class="col-4">
             <p class="text-danger" th:if="${#fields.hasErrors('cleanMoney')}" th:errors="*{cleanMoney}"></p>
           </div>
         </div>
         <div class="form-group">
           <label for="dirtyMoney" class="col-sm-2 control-label">Prix argent sale</label>
           <div class="col-sm-10">
-            <input type="text" th:field="*{dirtyMoney}" id="dirtyMoney" placeholder="Prix argent sale" class="col-4">
+            <input type="number" th:field="*{dirtyMoney}" id="dirtyMoney" placeholder="Prix argent sale" class="col-4">
             <p class="text-danger" th:if="${#fields.hasErrors('dirtyMoney')}" th:errors="*{dirtyMoney}"></p>
           </div>
         </div>

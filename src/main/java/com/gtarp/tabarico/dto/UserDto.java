@@ -13,21 +13,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserDto {
     private Integer id;
-    @NotBlank
-    @NotBlank(groups = {OnUpdate.class})
+    @NotBlank(message = "Indiquez un nom d'utilisateur")
+    @NotBlank(groups = {OnUpdate.class}, message = "Indiquez un nom d'utilisateur")
     private String username;
-    @NotBlank
+    @NotBlank(message = "Indiquez un mot de passe")
     private String password;
-    @NotBlank
-    @NotBlank(groups = {OnUpdate.class})
+    @NotBlank(message = "Indiquez un nom")
+    @NotBlank(groups = {OnUpdate.class}, message = "Indiquez un nom")
     private String lastName;
-    @NotBlank
-    @NotBlank(groups = {OnUpdate.class})
+    @NotBlank(message = "Indiquez un prénom")
+    @NotBlank(groups = {OnUpdate.class}, message = "Indiquez un prénom")
     private String firstName;
-    @NotBlank
-    @NotBlank(groups = {OnUpdate.class})
+    @NotBlank(message = "Indiquez un numéro de téléphone")
+    @NotBlank(groups = {OnUpdate.class},message = "Indiquez un numéro de téléphone")
     private String phone;
-    @NotNull
-    @NotNull(groups = {OnUpdate.class})
+    @NotNull(message = "Sélectionnez un role")
+    @NotNull(groups = {OnUpdate.class}, message = "Sélectionnez un role")
     private Role role;
+    private boolean admin;
 }

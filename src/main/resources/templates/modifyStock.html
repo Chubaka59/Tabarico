@@ -56,6 +56,7 @@
             <select id="product" class="col-4" th:field="*{product}" onchange="showStock(this)">
               <option th:each="product : ${products}" th:value="${product.id}" th:text="${product.name}" th:attr="stock=${product.stock}"></option>
             </select>
+            <p class="text-danger" th:if="${#fields.hasErrors('product')}" th:errors="*{product}"></p>
           </div>
         </div>
         <div class="form-group">
@@ -70,12 +71,13 @@
             <select id="operationStock" class="col-4" th:field="*{operationStock}">
               <option th:each="operationStock : ${operationStocks}" th:value="${operationStock.name()}" th:text="${operationStock.toString()}"></option>
             </select>
+            <p class="text-danger" th:if="${#fields.hasErrors('operationStock')}" th:errors="*{operationStock}"></p>
           </div>
         </div>
         <div class="form-group">
           <label for="quantity" class="col-sm-2 control-label">Quantité</label>
           <div class="col-sm-10">
-            <input type="number" th:field="*{quantity}" id="quantity" placeholder="Quantité" class="col-4" onchange="calculatePrice(this.form)" min="1" step="1">
+            <input type="number" th:field="*{quantity}" id="quantity" placeholder="Quantité" class="col-4">
             <p class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></p>
           </div>
         </div>

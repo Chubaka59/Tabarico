@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,7 +74,7 @@ public class AccountingServiceTest {
         when(productRepository.save(any(Product.class))).thenReturn(new Product());
         when(stockRepository.save(any(Stock.class))).thenReturn(new Stock());
         Product product = new Product(1, "testProduct", 100, 50, 1000);
-        CustomerSaleDto customerSaleDto = new CustomerSaleDto(1, Calendar.getInstance(), product, TypeOfSale.dirtyMoney, 100, new Contract());
+        CustomerSaleDto customerSaleDto = new CustomerSaleDto(1, product, TypeOfSale.dirtyMoney, 100, new Contract());
 
         //WHEN we create the customer Sale
         CustomerSale customerSale = accountingService.createCustomerSale(customerSaleDto, "testUsername");

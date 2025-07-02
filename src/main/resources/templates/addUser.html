@@ -91,6 +91,14 @@
               <option value="">-- Selectionnez un role --</option>
               <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
             </select>
+            <p class="text-danger" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="admin" class="col-sm-2 control-label">Admin</label>
+          <div class="col-sm-10">
+            <input type="checkbox" th:field="*{admin}" id="admin" placeholder="Admin" class="col-4">
+            <p class="text-danger" th:if="${#fields.hasErrors('admin')}" th:errors="*{admin}"></p>
           </div>
         </div>
 

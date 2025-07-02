@@ -1,9 +1,6 @@
 package com.gtarp.tabarico.dto;
 
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,12 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RoleDto {
     private Integer id;
-    @NotBlank
+    @NotBlank(message = "Indiquez un nom")
     private String name;
+    @NotNull(message = "Indiquez un % de réduction")
     @Digits(integer = 3, fraction = 0)
-    @Min(0)
-    @Max(100)
+    @Min(value = 1, message = "La réduction doit être supérieure a 0")
+    @Max(value = 100, message = "La réduction doit être inférieure ou égale a 100")
     private Integer redistributionRate;
+    @NotNull(message = "Indiquez un montant")
     @Digits(integer = 10, fraction = 0)
     private Integer salary;
 }

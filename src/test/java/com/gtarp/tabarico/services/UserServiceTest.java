@@ -74,7 +74,7 @@ public class UserServiceTest {
     public void addUserTest() {
         //GIVEN the user we would add doesn't exist
         when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.empty());
-        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role());
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false);
         User user = new User();
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -89,7 +89,7 @@ public class UserServiceTest {
     public void addUserWhenUserAlreadyExistsTest() {
         //GIVEN the user we would add already exist
         User user = new User();
-        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role());
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false);
         when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(user));
 
         //WHEN we try to add the user THEN an exception is thrown
@@ -101,7 +101,7 @@ public class UserServiceTest {
         //GIVEN there is a user to update
         User existingUser = new User();
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(existingUser));
-        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role());
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false);
 
         //WHEN we try to update the user
         userService.update(1, userDto);

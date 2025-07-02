@@ -32,6 +32,7 @@ public class Product implements UpdatableEntity<Product, ProductDto> {
         this.name = productDto.getName();
         this.cleanMoney = productDto.getCleanMoney();
         this.dirtyMoney = productDto.getDirtyMoney();
+        this.stock = 0;
     }
 
     public Product update(ProductDto productDto) {

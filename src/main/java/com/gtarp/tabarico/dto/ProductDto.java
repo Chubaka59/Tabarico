@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductDto {
     private Integer id;
-    @NotBlank
+    @NotBlank(message = "Indiquez un nom de produit")
     private String name;
-    @NotNull
-    @Min(1)
-    @Digits(integer = 3, fraction = 0)
+    @NotNull(message = "Indiquez un tarif")
+    @Min(value = 1, message = "le tarif doit être supérieur a 0")
+    @Digits(integer = 3, fraction = 0, message = "Le tarif doit être un nombre entier")
     private Integer cleanMoney;
-    @NotNull
-    @Min(1)
-    @Digits(integer = 3, fraction = 0)
+    @NotNull(message = "Indiquez un tarif")
+    @Min(value = 1, message = "le tarif doit être supérieur a 0")
+    @Digits(integer = 3, fraction = 0, message = "Le tarif doit être un nombre entier")
     private Integer dirtyMoney;
 }

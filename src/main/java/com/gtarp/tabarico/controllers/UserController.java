@@ -41,7 +41,7 @@ public class UserController {
     public String addUser(@Valid @ModelAttribute("userDto") UserDto userDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("users", userDto);
-            return "addUser";
+            return showAddUserPage(userDto, model);
         }
         try {
             userService.insert(userDto);
@@ -59,7 +59,7 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public String showUpdateUserPage(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("user", userService.getById(id));
+        model.addAttribute("userDto", userService.getById(id));
         model.addAttribute("roles", roleService.getAll());
         return "updateUser";
     }
@@ -67,13 +67,14 @@ public class UserController {
     @PostMapping("/users/{id}")
     public String updateUser(@PathVariable("id") Integer id, @Validated(OnUpdate.class) @ModelAttribute("userDto") UserDto userDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("userDto", userDto);
             return "updateUser";
         }
         try {
             userService.update(id, userDto);
             return getUserListPage(model);
         } catch (Exception e) {
-            return "updateUser";
+            return showUpdateUserPage(id, model);
         }
     }
 

@@ -66,16 +66,14 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/products/{id}")
     public String showUpdateProductPage(@PathVariable("id") Integer id, Model model) {
-        if(!model.containsAttribute("product")) {
-            model.addAttribute("product", productService.getById(id));
-        }
+        model.addAttribute("productDto", productService.getById(id));
         return "updateProduct";
     }
 
     @PostMapping("/configuration/products/{id}")
     public String updateProduct(@PathVariable("id") Integer id, @Valid @ModelAttribute("productDto") ProductDto productDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("product", productDto);
+            model.addAttribute("productDto", productDto);
             return "updateProduct";
         }
         try {
@@ -113,14 +111,14 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/contracts/{id}")
     public String showUpdateContractPage(@PathVariable Integer id, Model model) {
-        model.addAttribute("contract", contractService.getById(id));
+        model.addAttribute("contractDto", contractService.getById(id));
         return "updateContract";
     }
 
     @PostMapping("/configuration/contracts/{id}")
     public String updateContract(@PathVariable("id") Integer id, @Valid @ModelAttribute("contractDto") ContractDto contractDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("contract", contractDto);
+            model.addAttribute("contractDto", contractDto);
             return "updateContract";
         }
         try {
@@ -158,14 +156,14 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/roles/{id}")
     public String showUpdateRolePage(@PathVariable Integer id, Model model) {
-        model.addAttribute("role", roleService.getById(id));
+        model.addAttribute("roleDto", roleService.getById(id));
         return "updateRole";
     }
 
     @PostMapping("/configuration/roles/{id}")
     public String updateRole(@PathVariable("id") Integer id, @Valid @ModelAttribute("roleDto") RoleDto roleDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("role", roleDto);
+            model.addAttribute("roleDto", roleDto);
             return "updateRole";
         }
         try {
@@ -178,14 +176,14 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/customerDirtySaleRates/{id}")
     public String showUpdateCustomerDirtySaleRatePage(@PathVariable Integer id, Model model) {
-        model.addAttribute("customerDirtySaleRate", customerDirtySaleRateService.getById(id));
+        model.addAttribute("customerDirtySaleRateDto", customerDirtySaleRateService.getById(id));
         return "updateCustomerDirtySaleRate";
     }
 
     @PostMapping("/configuration/customerDirtySaleRates/{id}")
     public String updateCustomerDirtySaleRate(@PathVariable("id") Integer id, @Valid @ModelAttribute("customerDirtySaleRateDto") CustomerDirtySaleRateDto customerDirtySaleRateDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("customerDirtySaleRate", customerDirtySaleRateDto);
+            model.addAttribute("customerDirtySaleRateDto", customerDirtySaleRateDto);
             return "updateCustomerDirtySaleRate";
         }
         try {

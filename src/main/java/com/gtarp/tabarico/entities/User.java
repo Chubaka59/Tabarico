@@ -48,6 +48,7 @@ public class User implements UpdatableEntity<User, UserDto> {
         this.firstName = userDto.getFirstName();
         this.phone = userDto.getPhone();
         this.role = userDto.getRole();
+        this.admin = userDto.isAdmin();
     }
 
     public User update(UserDto userDto) {
@@ -59,6 +60,7 @@ public class User implements UpdatableEntity<User, UserDto> {
         this.firstName = userDto.getFirstName();
         this.phone = userDto.getPhone();
         this.role = userDto.getRole();
+        this.admin = userDto.isAdmin();
         return this;
     }
 

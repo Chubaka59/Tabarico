@@ -65,8 +65,8 @@ public class AccountingController {
     @PostMapping("/addCustomerSale")
     public String addCustomerSale(@Valid @ModelAttribute("customerSaleDto") CustomerSaleDto customerSaleDto, BindingResult result, Model model, Principal principal) {
         if (result.hasErrors()) {
-            model.addAttribute("customerSale", customerSaleDto);
-            return "addCustomerSale";
+            model.addAttribute("customerSaleDto", customerSaleDto);
+            return getAddCustomerSalePage(customerSaleDto, model);
         }
         try {
             accountingService.createCustomerSale(customerSaleDto, principal.getName());
@@ -86,17 +86,17 @@ public class AccountingController {
     }
 
     @PostMapping("/modifyStock")
-    public String modifyStock(@Valid @ModelAttribute("StockDto") StockDto stockDto, BindingResult result, Model model, Principal principal) {
+    public String modifyStock(@Valid @ModelAttribute("stockDto") StockDto stockDto, BindingResult result, Model model, Principal principal) {
         if (result.hasErrors()) {
             model.addAttribute("stockDto", stockDto);
-            return "modifyStock";
+            return getModifyStockPage(Optional.empty(), stockDto, model);
         }
         try {
             stockDto.setTypeOfStockMovement(TypeOfStockMovement.stockModification);
             accountingService.modifyStock(stockDto, principal.getName());
             return "home";
         } catch (Exception e) {
-            return "modifyStock";
+            return getModifyStockPage(Optional.empty(), stockDto, model);
         }
     }
 
