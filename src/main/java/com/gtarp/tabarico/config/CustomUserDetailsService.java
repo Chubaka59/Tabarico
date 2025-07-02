@@ -20,14 +20,19 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findUserByUsername(username)
-                .map(user -> new User(user.getUsername(), user.getPassword(), getAuthorities(user.getAdmin())))
+                .map(user -> new User(user.getUsername(), user.getPassword(), getAuthorities(user)))
                 .orElseThrow(() -> new UserNotFoundException(username));
     }
 
-    private Set<GrantedAuthority> getAuthorities(boolean admin){
-        if (admin) {
+    private Set<GrantedAuthority> getAuthorities(com.gtarp.tabarico.entities.User user){
+        if (user.getAdmin() || user.getRole().getName().equals("Responsable")) {
             Set<GrantedAuthority> authorities = new HashSet<>();
-            authorities.add(new SimpleGrantedAuthority("ADMIN"));
+            if (user.getAdmin()) {
+                authorities.add(new SimpleGrantedAuthority("ADMIN"));
+            }
+            if (user.getRole().getName().equals("Responsable")) {
+                authorities.add(new SimpleGrantedAuthority("RESPONSABLE"));
+            }
             return authorities;
         }
         return Set.of();
