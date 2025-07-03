@@ -1,6 +1,7 @@
 package com.gtarp.tabarico.dto;
 
 import com.gtarp.tabarico.entities.Role;
+import com.gtarp.tabarico.validation.OnResetPassword;
 import com.gtarp.tabarico.validation.OnUpdate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +18,7 @@ public class UserDto {
     @NotBlank(groups = {OnUpdate.class}, message = "Indiquez un nom d'utilisateur")
     private String username;
     @NotBlank(message = "Indiquez un mot de passe")
+    @NotBlank(groups = {OnResetPassword.class}, message = "Indiquez un mot de passe")
     private String password;
     @NotBlank(message = "Indiquez un nom")
     @NotBlank(groups = {OnUpdate.class}, message = "Indiquez un nom")

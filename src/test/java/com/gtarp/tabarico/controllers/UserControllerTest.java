@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
+import java.security.Principal;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,9 +34,13 @@ public class UserControllerTest {
     @Mock
     private BindingResult result;
     @Mock
+    private Principal principal;
+    @Mock
     private UserService userService;
     @Mock
     private CrudService<Role, RoleDto> roleService;
+    @Mock
+    private AccountingController accountingController;
 
     @Test
     public void getUserListPageTest() {
@@ -214,5 +219,63 @@ public class UserControllerTest {
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
         verify(userService, times(1)).updateBooleanValue(any(CheckboxUpdateRequestDto.class));
+    }
+
+    @Test
+    public void getResetPasswordPageTest() {
+        //GIVEN we should get this string
+        String expectedString = "resetPassword";
+        when(userService.getByUsername(anyString())).thenReturn(new User());
+        when(principal.getName()).thenReturn("test");
+
+        //WHEN we call the method
+        String actualString = userController.getResetPasswordPage(model, principal);
+
+        //THEN we get the correct String and the information of the user
+        assertEquals(expectedString, actualString);
+        verify(userService, times(1)).getByUsername(anyString());
+    }
+
+    @Test
+    public void resetPasswordTest() {
+        String expectedString = "personalDashboard";
+        when(userService.updatePassword(anyInt(), any(UserDto.class))).thenReturn(new User());
+        when(result.hasErrors()).thenReturn(false);
+        when(accountingController.getPersonalDashboardPage(any(Model.class), any(Principal.class))).thenReturn("personalDashboard");
+
+        //WHEN we call this method
+        String actualString = userController.resetPassword(1, new UserDto(), result, model, principal);
+
+        //THEN we get the correct string and the user is updated
+        assertEquals(expectedString, actualString);
+        verify(userService, times(1)).updatePassword(anyInt(), any(UserDto.class));
+    }
+
+    @Test
+    public void resetPasswordWhenErrorIsThrownTest() {
+        //GIVEN an esxception should be thrown
+        String expectedString = "resetPassword";
+        when(userService.updatePassword(anyInt(), any(UserDto.class))).thenThrow(new RuntimeException());
+        when(result.hasErrors()).thenReturn(false);
+
+        //WHEN we try to update a user
+        String actualString = userController.resetPassword(1, new UserDto(), result, model, principal);
+
+        //THEN we get the correct String
+        assertEquals(expectedString, actualString);
+        verify(userService, times(1)).updatePassword(anyInt(), any(UserDto.class));
+    }
+
+    @Test
+    public void resetPasswordWhenErrorInTheFormTest() {
+        String expectedString = "resetPassword";
+        when(result.hasErrors()).thenReturn(true);
+
+        //WHEN we try to update the user
+        String actualString = userController.resetPassword(1, new UserDto(), result, model, principal);
+
+        //THEN we get the correct string and we don't update the user
+        assertEquals(expectedString, actualString);
+        verify(userService, times(0)).updatePassword(anyInt(), any(UserDto.class));
     }
 }

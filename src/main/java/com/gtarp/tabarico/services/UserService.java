@@ -6,4 +6,6 @@ import com.gtarp.tabarico.entities.User;
 
 public interface UserService extends CrudService<User, UserDto> {
     void updateBooleanValue(CheckboxUpdateRequestDto checkboxUpdateRequestDto);
+    User getByUsername(String username);
+    User updatePassword(Integer id, UserDto userDto);
 }

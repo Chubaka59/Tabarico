@@ -60,4 +60,14 @@ public class UserServiceImpl extends AbstractCrudService<User, UserRepository, U
         }
         this.repository.save(user);
     }
+
+    public User getByUsername(String username) {
+        return this.repository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
+    }
+
+    @Override
+    public User updatePassword(Integer id, UserDto userDto) {
+        User updatedEntity = getById(id).updatePassword(userDto);
+        return repository.save(updatedEntity);
+    }
 }

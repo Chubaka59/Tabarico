@@ -67,4 +67,9 @@ public class User implements UpdatableEntity<User, UserDto> {
     public String toString() {
         return firstName + " " + lastName;
     }
+
+    public User updatePassword(UserDto userDto) {
+        this.password = new BCryptPasswordEncoder().encode(userDto.getPassword());
+        return this;
+    }
 }

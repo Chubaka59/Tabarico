@@ -7,6 +7,7 @@ import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.exception.UserNotFoundException;
 import com.gtarp.tabarico.services.CrudService;
 import com.gtarp.tabarico.services.UserService;
+import com.gtarp.tabarico.validation.OnResetPassword;
 import com.gtarp.tabarico.validation.OnUpdate;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @Controller
 public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
     private CrudService<Role, RoleDto> roleService;
+    @Autowired
+    private AccountingController accountingController;
 
     @GetMapping("/users")
     public String getUserListPage(Model model) {
@@ -87,6 +92,26 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/resetPassword")
+    public String getResetPasswordPage(Model model, Principal principal) {
+        model.addAttribute("userDto", userService.getByUsername(principal.getName()));
+        return "resetPassword";
+    }
+
+    @PostMapping("/users/{id}/resetPassword")
+    public String resetPassword(@PathVariable("id") Integer id, @Validated(OnResetPassword.class) @ModelAttribute("userDto") UserDto userDto, BindingResult result, Model model, Principal principal) {
+        if (result.hasErrors()) {
+            model.addAttribute("userDto", userDto);
+            return "resetPassword";
+        }
+        try {
+            userService.updatePassword(id, userDto);
+            return accountingController.getPersonalDashboardPage(model, principal);
+        } catch (Exception e) {
+            return getResetPasswordPage(model, principal);
         }
     }
 }

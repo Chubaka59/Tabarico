@@ -149,4 +149,39 @@ public class UserServiceTest {
                 Arguments.of(new CheckboxUpdateRequestDto(1, "warning2", true))
         );
     }
+
+    @Test
+    public void getByUsernameTest() {
+        //GIVEN we should get a user
+        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(new User()));
+
+        //WHEN we call this method
+        userService.getByUsername("testUsername");
+
+        //THEN we get the user
+        verify(userRepository, times(1)).findUserByUsername(anyString());
+    }
+
+    @Test
+    public void getByUsernameWhenUserIsNotFoundTest() {
+        //GIVEN this should not find a user
+        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.empty());
+
+        //WHEN we try to get this user THEN an exception is thrown
+        assertThrows(UserNotFoundException.class, () -> userService.getById(1));
+    }
+
+    @Test
+    public void updatePasswordTest() {
+        //GIVEN there is a user to update
+        User existingUser = new User();
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(existingUser));
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false);
+
+        //WHEN we try to update the user
+        userService.updatePassword(1, userDto);
+
+        //THEN userRepository.save is called
+        verify(userRepository, times(1)).save(any(User.class));
+    }
 }
