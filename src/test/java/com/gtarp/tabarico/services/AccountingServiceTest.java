@@ -190,4 +190,33 @@ public class AccountingServiceTest {
         assertTrue(accountingSummaryDtoList.get(0).isWarning1());
         assertTrue(accountingSummaryDtoList.get(0).isWarning2());
     }
+    
+    @Test
+    public void resetAccountingTest() {
+        //GIVEN we should get a list of user, a list of exporterSale, a list of customerSale and save a user
+        Role role = new Role(1, "testRole", 40, 30000);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", false, role, false, false, false, 30000, 10000, false, false);
+        when(userRepository.findAll()).thenReturn(List.of(user));
+        Product product = new Product(1, "testProduct", 100, 50, 1000);
+        CustomerSale customerSale1 = new CustomerSale(1, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
+        CustomerSale customerSale2 = new CustomerSale(2, LocalDateTime.now(), product, TypeOfSale.dirtyMoney, 100, null, BigDecimal.valueOf(3500), user);
+        CustomerSale customerSale3 = new CustomerSale(3, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
+        when(customerSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(customerSale1, customerSale2, customerSale3));
+        ExporterSale exporterSale1 = new ExporterSale(1, LocalDateTime.now(), user, 1000, 50, BigDecimal.valueOf(100000), BigDecimal.valueOf(10000));
+        ExporterSale exporterSale2 = new ExporterSale(2, LocalDateTime.now(), user, 500, 10, BigDecimal.valueOf(50000), BigDecimal.valueOf(5000));
+        when(exporterSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(exporterSale1, exporterSale2));
+        CustomerDirtySaleRate customerDirtySaleRate = new CustomerDirtySaleRate(1, 35);
+        when(customerDirtySaleRateRepository.findById(anyInt())).thenReturn(Optional.of(customerDirtySaleRate));
+        
+        //WHEN we try to reset the accouting
+        accountingService.resetAccounting();
+        
+        //THEN the user has been updated
+        verify(userRepository, times(1)).save(any(User.class));
+        verify(userRepository,times(1)).findAll();
+        verify(exporterSaleRepository, times(1)).findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class));
+        verify(customerSaleRepository, times(1)).findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class));
+        verify(customerDirtySaleRateRepository, times(1)).findById(anyInt());
+        
+    }
 }

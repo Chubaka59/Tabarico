@@ -17,4 +17,5 @@ public interface AccountingService {
     Stock modifyStock(StockDto stockDto, String username);
     List<Stock> getStockListByDate(LocalDate date);
     List<AccountingSummaryDto> getAccountingSummaryListOfThisWeek();
+    void resetAccounting();
 }
