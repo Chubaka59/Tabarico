@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -48,7 +45,7 @@ public class AccountingController {
         }
         try {
             accountingService.createExporterSale(exporterSaleDto, principal.getName());
-            return "home";
+            return "personalDashboard";
         } catch (Exception e) {
             return "addExporterSale";
         }
@@ -70,7 +67,7 @@ public class AccountingController {
         }
         try {
             accountingService.createCustomerSale(customerSaleDto, principal.getName());
-            return "home";
+            return "personalDashboard";
         } catch (Exception e) {
             return "addCustomerSale";
         }
@@ -94,15 +91,21 @@ public class AccountingController {
         try {
             stockDto.setTypeOfStockMovement(TypeOfStockMovement.stockModification);
             accountingService.modifyStock(stockDto, principal.getName());
-            return "home";
+            return "personalDashboard";
         } catch (Exception e) {
             return getModifyStockPage(Optional.empty(), stockDto, model);
         }
     }
 
-    @GetMapping("/accountingSummary")
-    public String getAccountingSummaryPage(Model model) {
-        model.addAttribute("accountingSummaryDtoList", accountingService.getAccountingSummaryListOfThisWeek());
-        return "accountingSummary";
+    @GetMapping("/dashboard")
+    public String getDashboardPage(Model model) {
+        model.addAttribute("dashboardDtoList", accountingService.getDashboardListOfThisWeek());
+        return "dashboard";
+    }
+
+    @RequestMapping("/personalDashboard")
+    public String getPersonalDashboardPage(Model model, Principal principal) {
+        model.addAttribute("personalDashboardDto", accountingService.getPersonalDashboardDto(principal.getName()));
+        return "personalDashboard";
     }
 }

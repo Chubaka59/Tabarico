@@ -4,6 +4,7 @@ import com.gtarp.tabarico.dto.ContractDto;
 import com.gtarp.tabarico.dto.ProductDto;
 import com.gtarp.tabarico.dto.accouting.CustomerSaleDto;
 import com.gtarp.tabarico.dto.accouting.ExporterSaleDto;
+import com.gtarp.tabarico.dto.accouting.PersonalDashboardDto;
 import com.gtarp.tabarico.dto.accouting.StockDto;
 import com.gtarp.tabarico.entities.Contract;
 import com.gtarp.tabarico.entities.Product;
@@ -63,7 +64,7 @@ public class AccountingControllerTest {
     @Test
     public void AddExporterSaleTest() {
         //GIVEN we should get this string and the exporterSale should be created
-        String expectedString = "home";
+        String expectedString = "personalDashboard";
         when(accountingService.createExporterSale(any(ExporterSaleDto.class), anyString())).thenReturn(new ExporterSale());
         when(principal.getName()).thenReturn("principal");
 
@@ -123,7 +124,7 @@ public class AccountingControllerTest {
     @Test
     public void addCustomerSaleTest() {
         //GIVEN we should ge this string and a customerSale should be created
-        String expectedString = "home";
+        String expectedString = "personalDashboard";
         when(accountingService.createCustomerSale(any(CustomerSaleDto.class), anyString())).thenReturn(new CustomerSale());
         when(principal.getName()).thenReturn("principal");
 
@@ -183,7 +184,7 @@ public class AccountingControllerTest {
     @Test
     public void modifyStockTest() {
         //GIVEN we should get this string and the stock should be modified
-        String expectedString = "home";
+        String expectedString = "personalDashboard";
         when(accountingService.modifyStock(any(StockDto.class), anyString())).thenReturn(new Stock());
         when(principal.getName()).thenReturn("principal");
 
@@ -225,16 +226,31 @@ public class AccountingControllerTest {
     }
 
     @Test
-    public void getAccountingSummaryPageTest() {
+    public void getDashboardPageTest() {
         //GIVEN we should get this string
-        String expectedString = "accountingSummary";
-        when(accountingService.getAccountingSummaryListOfThisWeek()).thenReturn(new ArrayList<>());
+        String expectedString = "dashboard";
+        when(accountingService.getDashboardListOfThisWeek()).thenReturn(new ArrayList<>());
 
         //WHEN we call this method
-        String actualString = accountingController.getAccountingSummaryPage(model);
+        String actualString = accountingController.getDashboardPage(model);
 
         //THEN we get the correct string and we get a list of accounting
         assertEquals(expectedString, actualString);
-        verify(accountingService, times(1)).getAccountingSummaryListOfThisWeek();
+        verify(accountingService, times(1)).getDashboardListOfThisWeek();
+    }
+
+    @Test
+    public void getPersonalDashboardPageTest() {
+        //GIVEN we should get this string and a list of PersonalDashboardDto
+        String expectedString = "personalDashboard";
+        when(accountingService.getPersonalDashboardDto(anyString())).thenReturn(new PersonalDashboardDto());
+        when(principal.getName()).thenReturn("test");
+
+        //WHEN we call this method
+        String actualString = accountingController.getPersonalDashboardPage(model, principal);
+
+        //THENH we get the correct string
+        assertEquals(expectedString, actualString);
+        verify(accountingService, times(1)).getPersonalDashboardDto(anyString());
     }
 }

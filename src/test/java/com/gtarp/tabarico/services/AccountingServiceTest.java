@@ -1,9 +1,6 @@
 package com.gtarp.tabarico.services;
 
-import com.gtarp.tabarico.dto.accouting.AccountingSummaryDto;
-import com.gtarp.tabarico.dto.accouting.CustomerSaleDto;
-import com.gtarp.tabarico.dto.accouting.ExporterSaleDto;
-import com.gtarp.tabarico.dto.accouting.StockDto;
+import com.gtarp.tabarico.dto.accouting.*;
 import com.gtarp.tabarico.entities.*;
 import com.gtarp.tabarico.entities.accounting.*;
 import com.gtarp.tabarico.repositories.CustomerDirtySaleRateRepository;
@@ -116,7 +113,7 @@ public class AccountingServiceTest {
     }
 
     @Test
-    public void getAccountingSummaryListOfThisWeekWhenQuotaIsFalseTest() {
+    public void getDashboardListOfThisWeekWhenQuotaIsFalseTest() {
         //GIVEN we should get a list of users, a list of customerSale, a list of exporterSale, a customerDirtySaleRate
         Role role = new Role(1, "testRole", 40, 30000);
         User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", false, role, false, false, false, 30000, 10000, false, false);
@@ -134,27 +131,27 @@ public class AccountingServiceTest {
 
 
         //WHEN we call the method to get the list
-        List<AccountingSummaryDto> accountingSummaryDtoList = accountingService.getAccountingSummaryListOfThisWeek();
+        List<DashboardDto> dashboardDtoList = accountingService.getDashboardListOfThisWeek();
 
         //THEN we get the correct Data
-        assertEquals(1, accountingSummaryDtoList.size());
-        assertEquals(user, accountingSummaryDtoList.get(0).getUser());
-        assertEquals(14000, accountingSummaryDtoList.get(0).getCustomerSalesCleanMoney());
-        assertEquals(3500, accountingSummaryDtoList.get(0).getCustomerSalesDirtyMoney());
-        assertEquals(15000, accountingSummaryDtoList.get(0).getExporterSalesMoney());
-        assertEquals(1500, accountingSummaryDtoList.get(0).getExporterSalesQuantity());
-        assertFalse(accountingSummaryDtoList.get(0).isQuota());
-        assertFalse(accountingSummaryDtoList.get(0).isExporterQuota());
+        assertEquals(1, dashboardDtoList.size());
+        assertEquals(user, dashboardDtoList.get(0).getUser());
+        assertEquals(14000, dashboardDtoList.get(0).getCustomerSalesCleanMoney());
+        assertEquals(3500, dashboardDtoList.get(0).getCustomerSalesDirtyMoney());
+        assertEquals(15000, dashboardDtoList.get(0).getExporterSalesMoney());
+        assertEquals(1500, dashboardDtoList.get(0).getExporterSalesQuantity());
+        assertFalse(dashboardDtoList.get(0).isQuota());
+        assertFalse(dashboardDtoList.get(0).isExporterQuota());
         //0 for salary has quota isn't checked
-        assertEquals(0, accountingSummaryDtoList.get(0).getCleanMoneySalary());
-        assertEquals(3500 * customerDirtySaleRate.getCustomerDirtySaleRate() / 100, accountingSummaryDtoList.get(0).getDirtyMoneySalary());
-        assertFalse(accountingSummaryDtoList.get(0).isHoliday());
-        assertFalse(accountingSummaryDtoList.get(0).isWarning1());
-        assertFalse(accountingSummaryDtoList.get(0).isWarning2());
+        assertEquals(0, dashboardDtoList.get(0).getCleanMoneySalary());
+        assertEquals(3500 * customerDirtySaleRate.getCustomerDirtySaleRate() / 100, dashboardDtoList.get(0).getDirtyMoneySalary());
+        assertFalse(dashboardDtoList.get(0).isHoliday());
+        assertFalse(dashboardDtoList.get(0).isWarning1());
+        assertFalse(dashboardDtoList.get(0).isWarning2());
     }
 
     @Test
-    public void getAccountingSummaryListOfThisWeekWhenQuotaIsTrueTest() {
+    public void getDashboardListOfThisWeekWhenQuotaIsTrueTest() {
         //GIVEN we should get a list of users, a list of customerSale, a list of exporterSale, a customerDirtySaleRate
         Role role = new Role(1, "testRole", 40, 30000);
         User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, role, true, true, true, 30000, 10000, true, true);
@@ -172,23 +169,23 @@ public class AccountingServiceTest {
 
 
         //WHEN we call the method to get the list
-        List<AccountingSummaryDto> accountingSummaryDtoList = accountingService.getAccountingSummaryListOfThisWeek();
+        List<DashboardDto> dashboardDtoList = accountingService.getDashboardListOfThisWeek();
 
         //THEN we get the correct Data
-        assertEquals(1, accountingSummaryDtoList.size());
-        assertEquals(user, accountingSummaryDtoList.get(0).getUser());
-        assertEquals(14000, accountingSummaryDtoList.get(0).getCustomerSalesCleanMoney());
-        assertEquals(3500, accountingSummaryDtoList.get(0).getCustomerSalesDirtyMoney());
-        assertEquals(15000, accountingSummaryDtoList.get(0).getExporterSalesMoney());
-        assertEquals(1500, accountingSummaryDtoList.get(0).getExporterSalesQuantity());
-        assertTrue(accountingSummaryDtoList.get(0).isQuota());
-        assertTrue(accountingSummaryDtoList.get(0).isExporterQuota());
+        assertEquals(1, dashboardDtoList.size());
+        assertEquals(user, dashboardDtoList.get(0).getUser());
+        assertEquals(14000, dashboardDtoList.get(0).getCustomerSalesCleanMoney());
+        assertEquals(3500, dashboardDtoList.get(0).getCustomerSalesDirtyMoney());
+        assertEquals(15000, dashboardDtoList.get(0).getExporterSalesMoney());
+        assertEquals(1500, dashboardDtoList.get(0).getExporterSalesQuantity());
+        assertTrue(dashboardDtoList.get(0).isQuota());
+        assertTrue(dashboardDtoList.get(0).isExporterQuota());
         //0 for salary has quota isn't checked
-        assertEquals(41600, accountingSummaryDtoList.get(0).getCleanMoneySalary());
-        assertEquals(3500 * customerDirtySaleRate.getCustomerDirtySaleRate() / 100, accountingSummaryDtoList.get(0).getDirtyMoneySalary());
-        assertTrue(accountingSummaryDtoList.get(0).isHoliday());
-        assertTrue(accountingSummaryDtoList.get(0).isWarning1());
-        assertTrue(accountingSummaryDtoList.get(0).isWarning2());
+        assertEquals(41600, dashboardDtoList.get(0).getCleanMoneySalary());
+        assertEquals(3500 * customerDirtySaleRate.getCustomerDirtySaleRate() / 100, dashboardDtoList.get(0).getDirtyMoneySalary());
+        assertTrue(dashboardDtoList.get(0).isHoliday());
+        assertTrue(dashboardDtoList.get(0).isWarning1());
+        assertTrue(dashboardDtoList.get(0).isWarning2());
     }
     
     @Test
@@ -207,6 +204,7 @@ public class AccountingServiceTest {
         when(exporterSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(exporterSale1, exporterSale2));
         CustomerDirtySaleRate customerDirtySaleRate = new CustomerDirtySaleRate(1, 35);
         when(customerDirtySaleRateRepository.findById(anyInt())).thenReturn(Optional.of(customerDirtySaleRate));
+        when(userRepository.save(any(User.class))).thenReturn(user);
         
         //WHEN we try to reset the accouting
         accountingService.resetAccounting();
@@ -217,6 +215,36 @@ public class AccountingServiceTest {
         verify(exporterSaleRepository, times(1)).findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class));
         verify(customerSaleRepository, times(1)).findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class));
         verify(customerDirtySaleRateRepository, times(1)).findById(anyInt());
-        
+    }
+
+    @Test
+    public void getPersonalDashboardDtoTest() {
+        //GIVEN we should get a list of user, a list of exporterSale, a list of customerSale and save a user
+        Role role = new Role(1, "testRole", 40, 30000);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", false, role, false, false, false, 30000, 10000, true, true);
+        when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(user));
+        Product product = new Product(1, "testProduct", 100, 50, 1000);
+        CustomerSale customerSale1 = new CustomerSale(1, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
+        CustomerSale customerSale2 = new CustomerSale(2, LocalDateTime.now(), product, TypeOfSale.dirtyMoney, 100, null, BigDecimal.valueOf(3500), user);
+        CustomerSale customerSale3 = new CustomerSale(3, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
+        when(customerSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(customerSale1, customerSale2, customerSale3));
+        ExporterSale exporterSale1 = new ExporterSale(1, LocalDateTime.now(), user, 1000, 50, BigDecimal.valueOf(100000), BigDecimal.valueOf(10000));
+        ExporterSale exporterSale2 = new ExporterSale(2, LocalDateTime.now(), user, 500, 10, BigDecimal.valueOf(50000), BigDecimal.valueOf(5000));
+        when(exporterSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(exporterSale1, exporterSale2));
+        CustomerDirtySaleRate customerDirtySaleRate = new CustomerDirtySaleRate(1, 35);
+        when(customerDirtySaleRateRepository.findById(anyInt())).thenReturn(Optional.of(customerDirtySaleRate));
+
+        //WHEN we get the data
+        PersonalDashboardDto personalDashboardDto = accountingService.getPersonalDashboardDto("test");
+
+        //THEN we get the correct data
+        verify(userRepository,times(1)).findUserByUsername(anyString());
+        verify(exporterSaleRepository, times(1)).findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class));
+        verify(customerSaleRepository, times(1)).findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class));
+        verify(customerDirtySaleRateRepository, times(1)).findById(anyInt());
+        assertEquals(15000, personalDashboardDto.getExporterSalesMoney());
+        assertEquals(1500, personalDashboardDto.getExporterSalesQuantity());
+        assertEquals(41600, personalDashboardDto.getCleanMoneySalary());
+        assertEquals(1225, personalDashboardDto.getDirtyMoneySalary());
     }
 }

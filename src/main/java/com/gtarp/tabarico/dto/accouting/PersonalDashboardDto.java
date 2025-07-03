@@ -1,17 +1,13 @@
 package com.gtarp.tabarico.dto.accouting;
 
-import com.gtarp.tabarico.entities.User;
-import lombok.AllArgsConstructor;
+import com.gtarp.tabarico.entities.accounting.CustomerSale;
+import com.gtarp.tabarico.entities.accounting.ExporterSale;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class AccountingSummaryDto {
-    private User user;
-    private Integer customerSalesCleanMoney;
-    private Integer customerSalesDirtyMoney;
+public class PersonalDashboardDto {
     private Integer exporterSalesMoney;
     private Integer exporterSalesQuantity;
     private boolean quota;
@@ -23,4 +19,6 @@ public class AccountingSummaryDto {
     private boolean warning2;
     private Integer cleanMoneySalaryPreviousWeek;
     private Integer dirtyMoneySalaryPreviousWeek;
+    private List<ExporterSale> exporterSaleList;
+    private List<CustomerSale> customerSaleList;
 }

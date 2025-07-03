@@ -19,10 +19,10 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/home">Acceuil</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/personalDashboard">Compta Personnelle</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="/addExporterSale">Vente exportateur</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="/addCustomerSale">Vente client</a></li>
-                <li class="nav-item" sec:authorize="hasAuthority('RESPONSABLE')"><a class="nav-link active" aria-current="page" href="/accountingSummary">Dashboard</a></li>
+                <li class="nav-item" sec:authorize="hasAuthority('RESPONSABLE')"><a class="nav-link active" aria-current="page" href="/dashboard">Dashboard</a></li>
                 <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" href="/users">Utilisateurs</a></li>
                 <li class="nav-item" sec:authorize="hasAuthority('RESPONSABLE')"><a class="nav-link active" aria-current="page" href="/modifyStock">Stock</a></li>
                 <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" href="/configuration">Configuration</a></li>
@@ -74,59 +74,59 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="accountingSummaryDto : ${accountingSummaryDtoList}">
-                    <td th:text="${accountingSummaryDto.user.role.name}"></td>
-                    <td th:text="${accountingSummaryDto.user.username}"></td>
-                    <td th:text="${accountingSummaryDto.customerSalesCleanMoney}"></td>
-                    <td th:text="${accountingSummaryDto.customerSalesDirtyMoney}"></td>
-                    <td th:text="${accountingSummaryDto.exporterSalesMoney}"></td>
-                    <td th:text="${accountingSummaryDto.exporterSalesQuantity}"></td>
+                <tr th:each="dashboardDto : ${dashboardDtoList}">
+                    <td th:text="${dashboardDto.user.role.name}"></td>
+                    <td th:text="${dashboardDto.user.username}"></td>
+                    <td th:text="${dashboardDto.customerSalesCleanMoney}"></td>
+                    <td th:text="${dashboardDto.customerSalesDirtyMoney}"></td>
+                    <td th:text="${dashboardDto.exporterSalesMoney}"></td>
+                    <td th:text="${dashboardDto.exporterSalesQuantity}"></td>
                     <td>
                         <input type="checkbox"
-                               th:id="|quota-${accountingSummaryDto.user.id}|"
-                               th:checked="${accountingSummaryDto.quota}"
-                               th:data-user-id="${accountingSummaryDto.user.id}"
+                               th:id="|quota-${dashboardDto.user.id}|"
+                               th:checked="${dashboardDto.quota}"
+                               th:data-user-id="${dashboardDto.user.id}"
                                data-field="quota"
                                onchange="updateCheckboxValue(this)" />
                     </td>
                     <td>
                         <input type="checkbox"
-                               th:id="|exporterQuota-${accountingSummaryDto.user.id}|"
-                               th:checked="${accountingSummaryDto.exporterQuota}"
-                               th:data-user-id="${accountingSummaryDto.user.id}"
+                               th:id="|exporterQuota-${dashboardDto.user.id}|"
+                               th:checked="${dashboardDto.exporterQuota}"
+                               th:data-user-id="${dashboardDto.user.id}"
                                data-field="exporterQuota"
                                onchange="updateCheckboxValue(this)" />
                     </td>
-                    <td th:text="${accountingSummaryDto.cleanMoneySalary}"></td>
-                    <td th:text="${accountingSummaryDto.dirtyMoneySalary}"></td>
-                    <td th:text="${accountingSummaryDto.cleanMoneySalaryPreviousWeek}"></td>
-                    <td th:text="${accountingSummaryDto.dirtyMoneySalaryPreviousWeek}"></td>
+                    <td th:text="${dashboardDto.cleanMoneySalary}"></td>
+                    <td th:text="${dashboardDto.dirtyMoneySalary}"></td>
+                    <td th:text="${dashboardDto.cleanMoneySalaryPreviousWeek}"></td>
+                    <td th:text="${dashboardDto.dirtyMoneySalaryPreviousWeek}"></td>
                     <td>
                         <input type="checkbox"
-                               th:id="|holiday-${accountingSummaryDto.user.id}|"
-                               th:checked="${accountingSummaryDto.holiday}"
-                               th:data-user-id="${accountingSummaryDto.user.id}"
+                               th:id="|holiday-${dashboardDto.user.id}|"
+                               th:checked="${dashboardDto.holiday}"
+                               th:data-user-id="${dashboardDto.user.id}"
                                data-field="holiday"
                                onchange="updateCheckboxValue(this)" />
                     </td>
                     <td>
                         <input type="checkbox"
-                               th:id="|warning1-${accountingSummaryDto.user.id}|"
-                               th:checked="${accountingSummaryDto.warning1}"
-                               th:data-user-id="${accountingSummaryDto.user.id}"
+                               th:id="|warning1-${dashboardDto.user.id}|"
+                               th:checked="${dashboardDto.warning1}"
+                               th:data-user-id="${dashboardDto.user.id}"
                                data-field="warning1"
                                onchange="updateCheckboxValue(this)" />
                     </td>
                     <td>
                         <input type="checkbox"
-                               th:id="|warning2-${accountingSummaryDto.user.id}|"
-                               th:checked="${accountingSummaryDto.warning2}"
-                               th:data-user-id="${accountingSummaryDto.user.id}"
+                               th:id="|warning2-${dashboardDto.user.id}|"
+                               th:checked="${dashboardDto.warning2}"
+                               th:data-user-id="${dashboardDto.user.id}"
                                data-field="warning2"
                                onchange="updateCheckboxValue(this)" />
                     </td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(accountingSummaryDtoList)}">
+                <tr th:if="${#lists.isEmpty(dashboardDtoList)}">
                     <td colspan="15" class="text-center text-muted py-3">Aucune donnée disponible pour le moment.</td>
                 </tr>
                 </tbody>

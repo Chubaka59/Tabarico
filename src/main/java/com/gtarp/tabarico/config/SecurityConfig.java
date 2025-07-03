@@ -37,11 +37,11 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/configuration/**", "/users/**").hasAnyAuthority("ADMIN")
-                        .requestMatchers("/accountingSummary/**", "/modifyStock/**").hasAnyAuthority("RESPONSABLE")
+                        .requestMatchers("/dashboard/**", "/modifyStock/**").hasAnyAuthority("RESPONSABLE", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
-                        .defaultSuccessUrl("/home", true)
+                        .defaultSuccessUrl("/personalDashboard", true)
                         .usernameParameter("username")
                         .passwordParameter("password")
                 )

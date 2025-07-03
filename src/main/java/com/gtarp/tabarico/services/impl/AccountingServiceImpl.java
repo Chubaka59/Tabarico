@@ -1,9 +1,6 @@
 package com.gtarp.tabarico.services.impl;
 
-import com.gtarp.tabarico.dto.accouting.AccountingSummaryDto;
-import com.gtarp.tabarico.dto.accouting.CustomerSaleDto;
-import com.gtarp.tabarico.dto.accouting.ExporterSaleDto;
-import com.gtarp.tabarico.dto.accouting.StockDto;
+import com.gtarp.tabarico.dto.accouting.*;
 import com.gtarp.tabarico.entities.User;
 import com.gtarp.tabarico.entities.accounting.*;
 import com.gtarp.tabarico.exception.CustomerDirtySaleRateNotFoundException;
@@ -137,45 +134,45 @@ public class AccountingServiceImpl implements AccountingService {
         return stockRepository.getStockListByDate(date);
     }
 
-    public List<AccountingSummaryDto> getAccountingSummaryListOfThisWeek() {
+    public List<DashboardDto> getDashboardListOfThisWeek() {
         //On decoupe les semaines du dimanche au dimanche pour les semaines de compta
         LocalDate today = LocalDate.now();
         LocalDateTime startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).atTime(4, 0, 0, 0);
         LocalDateTime endOfWeek = startOfWeek.plusWeeks(1).withHour(3).withMinute(59).withSecond(59).withNano(999999999);
 
-        List<AccountingSummaryDto> accountingSummaryDtoList = new ArrayList<>();
+        List<DashboardDto> dashboardDtoList = new ArrayList<>();
         List<User> userList = userRepository.findAll();
         for (User user : userList) {
-            AccountingSummaryDto accountingSummaryDto = new AccountingSummaryDto();
-            accountingSummaryDto.setUser(user);
+            DashboardDto dashboardDto = new DashboardDto();
+            dashboardDto.setUser(user);
 
             //On recupere toutes les ventes client pour le user et on groupe par type de vente
             List<CustomerSale> customerSaleList = customerSaleRepository.findAllByUserAndDateBetween(user, startOfWeek, endOfWeek);
             Map<TypeOfSale, Integer> salesByType = getCustomerSalesByTypeOfSales(customerSaleList);
-            accountingSummaryDto.setCustomerSalesCleanMoney(salesByType.get(TypeOfSale.cleanMoney));
-            accountingSummaryDto.setCustomerSalesDirtyMoney(salesByType.get(TypeOfSale.dirtyMoney));
+            dashboardDto.setCustomerSalesCleanMoney(salesByType.get(TypeOfSale.cleanMoney));
+            dashboardDto.setCustomerSalesDirtyMoney(salesByType.get(TypeOfSale.dirtyMoney));
 
             //On fait la somme de toutes les ventes exportateurs
             List<ExporterSale> exporterSaleList = exporterSaleRepository.findAllByUserAndDateBetween(user, startOfWeek, endOfWeek);
-            accountingSummaryDto.setExporterSalesMoney(getExporterSalesMoney(exporterSaleList));
-            accountingSummaryDto.setExporterSalesQuantity(getExporterSalesQuantity(exporterSaleList));
+            dashboardDto.setExporterSalesMoney(getExporterSalesMoney(exporterSaleList));
+            dashboardDto.setExporterSalesQuantity(getExporterSalesQuantity(exporterSaleList));
 
-            accountingSummaryDto.setQuota(user.isQuota());
-            accountingSummaryDto.setExporterQuota(user.isExporterQuota());
+            dashboardDto.setQuota(user.isQuota());
+            dashboardDto.setExporterQuota(user.isExporterQuota());
 
-            accountingSummaryDto.setCleanMoneySalary(calculateCleanMoneySalary(accountingSummaryDto.getExporterSalesMoney(), accountingSummaryDto.getCustomerSalesCleanMoney(), user));
+            dashboardDto.setCleanMoneySalary(calculateCleanMoneySalary(dashboardDto.getExporterSalesMoney(), dashboardDto.getCustomerSalesCleanMoney(), user));
             
-            accountingSummaryDto.setDirtyMoneySalary(calculateDirtyMoneySalary(accountingSummaryDto.getCustomerSalesDirtyMoney()));
+            dashboardDto.setDirtyMoneySalary(calculateDirtyMoneySalary(dashboardDto.getCustomerSalesDirtyMoney()));
 
-            accountingSummaryDto.setHoliday(user.isHoliday());
-            accountingSummaryDto.setWarning1(user.isWarning1());
-            accountingSummaryDto.setWarning2(user.isWarning2());
-            accountingSummaryDto.setCleanMoneySalaryPreviousWeek(user.getCleanMoneySalaryPreviousWeek());
-            accountingSummaryDto.setDirtyMoneySalaryPreviousWeek(user.getDirtyMoneySalaryPreviousWeek());
+            dashboardDto.setHoliday(user.isHoliday());
+            dashboardDto.setWarning1(user.isWarning1());
+            dashboardDto.setWarning2(user.isWarning2());
+            dashboardDto.setCleanMoneySalaryPreviousWeek(user.getCleanMoneySalaryPreviousWeek());
+            dashboardDto.setDirtyMoneySalaryPreviousWeek(user.getDirtyMoneySalaryPreviousWeek());
 
-            accountingSummaryDtoList.add(accountingSummaryDto);
+            dashboardDtoList.add(dashboardDto);
         }
-        return accountingSummaryDtoList;
+        return dashboardDtoList;
     }
 
     private Integer calculateDirtyMoneySalary(Integer customerSalesDirtyMoney) {
@@ -235,5 +232,31 @@ public class AccountingServiceImpl implements AccountingService {
             user.setExporterQuota(false);
             userRepository.save(user);
         }
+    }
+
+    public PersonalDashboardDto getPersonalDashboardDto(String username) {
+        //On decoupe les semaines du dimanche au dimanche pour les semaines de compta
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).atTime(4, 0, 0, 0);
+        LocalDateTime endOfWeek = startOfWeek.plusWeeks(1).withHour(3).withMinute(59).withSecond(59).withNano(999999999);
+        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException(username));
+        List<ExporterSale> exporterSaleList = exporterSaleRepository.findAllByUserAndDateBetween(user, startOfWeek, endOfWeek);
+        List<CustomerSale> customerSaleList = customerSaleRepository.findAllByUserAndDateBetween(user, startOfWeek, endOfWeek);
+        Map<TypeOfSale, Integer> salesByType = getCustomerSalesByTypeOfSales(customerSaleList);
+        PersonalDashboardDto personalDashboardDto = new PersonalDashboardDto();
+        personalDashboardDto.setExporterSalesMoney(getExporterSalesMoney(exporterSaleList));
+        personalDashboardDto.setExporterSalesQuantity(getExporterSalesQuantity(exporterSaleList));
+        personalDashboardDto.setQuota(user.isQuota());
+        personalDashboardDto.setExporterQuota(user.isExporterQuota());
+        personalDashboardDto.setCleanMoneySalary(calculateCleanMoneySalary(personalDashboardDto.getExporterSalesMoney(), salesByType.get(TypeOfSale.cleanMoney), user));
+        personalDashboardDto.setDirtyMoneySalary(calculateDirtyMoneySalary(salesByType.get(TypeOfSale.dirtyMoney)));
+        personalDashboardDto.setHoliday(user.isHoliday());
+        personalDashboardDto.setWarning1(user.isWarning1());
+        personalDashboardDto.setWarning2(user.isWarning2());
+        personalDashboardDto.setCleanMoneySalaryPreviousWeek(user.getCleanMoneySalaryPreviousWeek());
+        personalDashboardDto.setDirtyMoneySalaryPreviousWeek(user.getCleanMoneySalaryPreviousWeek());
+        personalDashboardDto.setExporterSaleList(exporterSaleList);
+        personalDashboardDto.setCustomerSaleList(customerSaleList);
+        return personalDashboardDto;
     }
 }
