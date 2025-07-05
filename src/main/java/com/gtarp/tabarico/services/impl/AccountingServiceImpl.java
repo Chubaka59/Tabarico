@@ -96,18 +96,19 @@ public class AccountingServiceImpl implements AccountingService {
     }
 
     private BigDecimal calculateCustomerSaleAmount(CustomerSaleDto customerSaleDto) {
-        int pricePerUnit;
+        BigDecimal pricePerUnit;
         if (customerSaleDto.getTypeOfSale().equals(TypeOfSale.cleanMoney)) {
-            pricePerUnit = customerSaleDto.getProduct().getCleanMoney();
+            pricePerUnit = new BigDecimal(customerSaleDto.getProduct().getCleanMoney());
             //la reduction des contrats ne s'applique que sur les ventes en propre
             if(customerSaleDto.getContract() != null) {
-                pricePerUnit = pricePerUnit - (pricePerUnit * customerSaleDto.getContract().getReduction() / 100);
+                BigDecimal reduction = new BigDecimal(customerSaleDto.getContract().getReduction());
+                pricePerUnit = pricePerUnit.subtract((pricePerUnit.multiply(reduction).divide(BigDecimal.valueOf(100))));
             }
         } else {
-            pricePerUnit = customerSaleDto.getProduct().getDirtyMoney();
+            pricePerUnit = new BigDecimal(customerSaleDto.getProduct().getDirtyMoney());
         }
 
-        return BigDecimal.valueOf(pricePerUnit*customerSaleDto.getQuantity()).setScale(0, RoundingMode.HALF_UP);
+        return pricePerUnit.multiply(BigDecimal.valueOf(customerSaleDto.getQuantity())).setScale(0, RoundingMode.HALF_UP);
     }
 
     public Stock modifyStock(StockDto stockDto, String username) {

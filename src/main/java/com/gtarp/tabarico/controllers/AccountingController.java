@@ -45,7 +45,7 @@ public class AccountingController {
         }
         try {
             accountingService.createExporterSale(exporterSaleDto, principal.getName());
-            return "personalDashboard";
+            return getPersonalDashboardPage(model, principal);
         } catch (Exception e) {
             return "addExporterSale";
         }
@@ -67,7 +67,7 @@ public class AccountingController {
         }
         try {
             accountingService.createCustomerSale(customerSaleDto, principal.getName());
-            return "personalDashboard";
+            return getPersonalDashboardPage(model, principal);
         } catch (Exception e) {
             return "addCustomerSale";
         }
@@ -91,7 +91,7 @@ public class AccountingController {
         try {
             stockDto.setTypeOfStockMovement(TypeOfStockMovement.stockModification);
             accountingService.modifyStock(stockDto, principal.getName());
-            return "personalDashboard";
+            return getPersonalDashboardPage(model, principal);
         } catch (Exception e) {
             return getModifyStockPage(Optional.empty(), stockDto, model);
         }
