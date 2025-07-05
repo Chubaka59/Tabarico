@@ -25,13 +25,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private Set<GrantedAuthority> getAuthorities(com.gtarp.tabarico.entities.User user){
-        if (user.getAdmin() || user.getRole().getName().equals("Responsable")) {
+        if (user.getAdmin() || user.getRole().getName().equals("Responsable") || user.getRole().getName().equals("Milice")) {
             Set<GrantedAuthority> authorities = new HashSet<>();
             if (user.getAdmin()) {
                 authorities.add(new SimpleGrantedAuthority("ADMIN"));
             }
             if (user.getRole().getName().equals("Responsable")) {
                 authorities.add(new SimpleGrantedAuthority("RESPONSABLE"));
+            }
+            if (user.getRole().getName().equals("Milice")) {
+                authorities.add(new SimpleGrantedAuthority("MILICE"));
             }
             return authorities;
         }

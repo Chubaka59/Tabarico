@@ -1,5 +1,6 @@
 insert into role(name, redistribution_rate, salary) values ('Responsable', 40, 30000)
 insert into role(name, redistribution_rate, salary) values ('CDI', 35, 20000)
+insert into role(name) values ('Milice')
 
 insert into user(first_name, last_name, password, phone, username, admin, role_id, holiday, warning1, warning2, quota, exporter_quota) values ('Ramon', 'Cruz', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', 'ramon.cruz',1, 1, false, false, false, true, true)
 insert into user(first_name, last_name, password, phone, username, admin, role_id, holiday, end_of_holiday, warning1, warning2, quota, exporter_quota) values ('Test', '1', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', '1',0, 1, true, '2025-12-12', false, false, true, true)
@@ -31,6 +32,8 @@ insert into user(first_name, last_name, password, phone, username, admin, role_i
 insert into user(first_name, last_name, password, phone, username, admin, role_id, holiday, warning1, warning2, quota, exporter_quota) values ('Test', '27', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', '27',0, 2, false, false, false, true, true)
 insert into user(first_name, last_name, password, phone, username, admin, role_id, holiday, warning1, warning2, quota, exporter_quota) values ('Test', '28', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', '28',0, 2, false, false, false, true, true)
 insert into user(first_name, last_name, password, phone, username, admin, role_id, holiday, warning1, warning2, quota, exporter_quota) values ('Test', '29', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', '29',0, 2, false, false, false, true, true)
+insert into user(first_name, last_name, password, phone, username, admin, role_id, holiday, warning1, warning2, quota, exporter_quota) values ('Test', 'Milice', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '0', 'Milice',0, 3, false, false, false, false, false)
+
 
 insert into product(name, clean_money, dirty_money, stock) values ('Cigarette', 70, 35, 1000)
 insert into product(name, clean_money, dirty_money, stock) values ('Menthol', 90, 60, 100)

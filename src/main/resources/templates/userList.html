@@ -11,7 +11,7 @@
 </head>
 <body>
 <!-- Navigation-->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" sec:authorize="!hasAuthority('MILICE')">
     <div class="container px-4 px-lg-5">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -43,29 +43,29 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="row"><h2>Liste des utilisateurs</h2></div>
-        <a href="/addUser" class="btn btn-primary btn-sm">Ajouter un utilisateur</a>
+        <a href="/addUser" class="btn btn-primary btn-sm" sec:authorize="!hasAuthority('MILICE')">Ajouter un utilisateur</a>
         <div class="row container px-4 px-lg-5 my-5">
             <table class="table table-bordered">
                 <thead>
                 <tr>
                     <th>Prénom</th>
                     <th>Nom</th>
-                    <th>Nom d'utilisateur</th>
-                    <th>Telephone</th>
+                    <th sec:authorize="!hasAuthority('MILICE')">Nom d'utilisateur</th>
+                    <th sec:authorize="!hasAuthority('MILICE')">Telephone</th>
                     <th>Role</th>
-                    <th>Admin</th>
-                    <th>Action</th>
+                    <th sec:authorize="!hasAuthority('MILICE')">Admin</th>
+                    <th sec:authorize="!hasAuthority('MILICE')">Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="user : ${users}">
                     <td th:text="${user.firstName}"></td>
                     <td th:text="${user.lastName}"></td>
-                    <td th:text="${user.username}"></td>
-                    <td th:text="${user.phone}"></td>
+                    <td th:text="${user.username}" sec:authorize="!hasAuthority('MILICE')"></td>
+                    <td th:text="${user.phone}" sec:authorize="!hasAuthority('MILICE')"></td>
                     <td th:text="${user.role.name}"></td>
-                    <td th:text="${user.admin}"></td>
-                    <td style="width: 20%" class="text-center">
+                    <td th:text="${user.admin}" sec:authorize="!hasAuthority('MILICE')"></td>
+                    <td style="width: 20%" class="text-center" sec:authorize="!hasAuthority('MILICE')">
                         <a th:href="@{/users/{id}(id=${user.id})}">Edit</a>&nbsp;|&nbsp;
                         <a th:href="@{/users/{id}/delete(id=${user.id})}">Delete</a>
                     </td>

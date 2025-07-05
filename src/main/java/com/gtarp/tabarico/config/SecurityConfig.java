@@ -4,6 +4,8 @@ import com.gtarp.tabarico.repositories.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,13 +38,32 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/users").hasAnyAuthority("MILICE", "ADMIN")
+                        .requestMatchers("/**")
+                        .access((authentication, context) -> {
+                            AuthorityAuthorizationManager<Object> adminOrResponsable =
+                                    AuthorityAuthorizationManager.hasAnyAuthority("ADMIN", "RESPONSABLE");
+
+                            if (authentication.get().getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("MILICE"))) {
+                                return new AuthorizationDecision(false);
+                            }
+                            return null;
+                        })
+
                         .requestMatchers("/dashboard/**", "/modifyStock/**").hasAnyAuthority("RESPONSABLE", "ADMIN")
                         .requestMatchers("/users/{id}/resetPassword").authenticated()
                         .requestMatchers("/configuration/**", "/users/**").hasAnyAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
-                        .defaultSuccessUrl("/personalDashboard", true)
+                        .successHandler((request, response, authentication) -> {
+                            if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("MILICE"))) {
+                                response.sendRedirect("/users");
+                            } else {
+                                response.sendRedirect("/personalDashboard");
+                            }
+                        })
                         .usernameParameter("username")
                         .passwordParameter("password")
                 )
