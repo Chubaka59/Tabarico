@@ -44,6 +44,8 @@ public class AccountingServiceTest {
     private StockRepository stockRepository;
     @Mock
     private CustomerDirtySaleRateRepository customerDirtySaleRateRepository;
+    @Mock
+    private UserService userService;
 
     @Test
     public void createExporterSaleTest() {
@@ -116,7 +118,7 @@ public class AccountingServiceTest {
     public void getDashboardListOfThisWeekWhenQuotaIsFalseTest() {
         //GIVEN we should get a list of users, a list of customerSale, a list of exporterSale, a customerDirtySaleRate
         Role role = new Role(1, "testRole", 40, 30000);
-        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", false, role, false, false, false, 30000, 10000, false, false);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", false, role, false, null, false, false, 30000, 10000, false, false);
         when(userRepository.findAll()).thenReturn(List.of(user));
         Product product = new Product(1, "testProduct", 100, 50, 1000);
         CustomerSale customerSale1 = new CustomerSale(1, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
@@ -128,6 +130,7 @@ public class AccountingServiceTest {
         when(exporterSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(exporterSale1, exporterSale2));
         CustomerDirtySaleRate customerDirtySaleRate = new CustomerDirtySaleRate(1, 35);
         when(customerDirtySaleRateRepository.findById(anyInt())).thenReturn(Optional.of(customerDirtySaleRate));
+        when(userService.disableHolidayWhenExpire(any(User.class))).thenReturn(user);
 
 
         //WHEN we call the method to get the list
@@ -154,7 +157,7 @@ public class AccountingServiceTest {
     public void getDashboardListOfThisWeekWhenQuotaIsTrueTest() {
         //GIVEN we should get a list of users, a list of customerSale, a list of exporterSale, a customerDirtySaleRate
         Role role = new Role(1, "testRole", 40, 30000);
-        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, role, true, true, true, 30000, 10000, true, true);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, role, true, null, true, true, 30000, 10000, true, true);
         when(userRepository.findAll()).thenReturn(List.of(user));
         Product product = new Product(1, "testProduct", 100, 50, 1000);
         CustomerSale customerSale1 = new CustomerSale(1, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
@@ -166,6 +169,7 @@ public class AccountingServiceTest {
         when(exporterSaleRepository.findAllByUserAndDateBetween(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(exporterSale1, exporterSale2));
         CustomerDirtySaleRate customerDirtySaleRate = new CustomerDirtySaleRate(1, 35);
         when(customerDirtySaleRateRepository.findById(anyInt())).thenReturn(Optional.of(customerDirtySaleRate));
+        when(userService.disableHolidayWhenExpire(any(User.class))).thenReturn(user);
 
 
         //WHEN we call the method to get the list
@@ -192,7 +196,7 @@ public class AccountingServiceTest {
     public void resetAccountingTest() {
         //GIVEN we should get a list of user, a list of exporterSale, a list of customerSale and save a user
         Role role = new Role(1, "testRole", 40, 30000);
-        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", false, role, false, false, false, 30000, 10000, false, false);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", false, role, false, null, false, false, 30000, 10000, false, false);
         when(userRepository.findAll()).thenReturn(List.of(user));
         Product product = new Product(1, "testProduct", 100, 50, 1000);
         CustomerSale customerSale1 = new CustomerSale(1, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);
@@ -221,7 +225,7 @@ public class AccountingServiceTest {
     public void getPersonalDashboardDtoTest() {
         //GIVEN we should get a list of user, a list of exporterSale, a list of customerSale and save a user
         Role role = new Role(1, "testRole", 40, 30000);
-        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", false, role, false, false, false, 30000, 10000, true, true);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", false, role, false, null, false, false, 30000, 10000, true, true);
         when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(user));
         Product product = new Product(1, "testProduct", 100, 50, 1000);
         CustomerSale customerSale1 = new CustomerSale(1, LocalDateTime.now(), product, TypeOfSale.cleanMoney, 100, null, BigDecimal.valueOf(7000), user);

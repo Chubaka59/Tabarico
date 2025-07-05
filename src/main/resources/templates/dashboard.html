@@ -10,7 +10,7 @@
     <title>Tabarico</title>
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="/css/styles.css" rel="stylesheet" />
-    <script type="text/javascript" src="js/accoutingSummary.js"></script>
+    <script type="text/javascript" src="js/dashboard.js"></script>
 </head>
 <body>
 <!-- Navigation-->
@@ -107,8 +107,12 @@
                                th:id="|holiday-${dashboardDto.user.id}|"
                                th:checked="${dashboardDto.holiday}"
                                th:data-user-id="${dashboardDto.user.id}"
-                               data-field="holiday"
-                               onchange="updateCheckboxValue(this)" />
+                               data-field="holiday"/>
+                        <input type="date"
+                               th:id="|endOfHoliday-${dashboardDto.user.id}|"
+                               th:value="${dashboardDto.endOfHoliday}"
+                               th:data-user-id="${dashboardDto.user.id}"
+                               data-field="endOfHoliday">
                     </td>
                     <td>
                         <input type="checkbox"

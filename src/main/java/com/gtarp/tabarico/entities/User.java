@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 @Table
@@ -34,6 +36,7 @@ public class User implements UpdatableEntity<User, UserDto> {
     @NotNull
     private Role role;
     private boolean holiday = false;
+    private LocalDate endOfHoliday;
     private boolean warning1 = false;
     private boolean warning2 = false;
     private Integer cleanMoneySalaryPreviousWeek;

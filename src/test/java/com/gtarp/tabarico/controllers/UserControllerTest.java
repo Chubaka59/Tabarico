@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -277,5 +278,42 @@ public class UserControllerTest {
         //THEN we get the correct string and we don't update the user
         assertEquals(expectedString, actualString);
         verify(userService, times(0)).updatePassword(anyInt(), any(UserDto.class));
+    }
+
+    @Test
+    public void updateHolidayDataTest() {
+        //GIVEN we should update the holiday datas and get a response
+        doNothing().when(userService).updateHoliday(any(HashMap.class));
+
+        //WHEN we try to update the data
+        ResponseEntity<Void> actualResponse = userController.updateHolidayData(new HashMap());
+
+        //THEN we get the correct response and the data has been updated
+        assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+        verify(userService, times(1)).updateHoliday(any(HashMap.class));
+    }
+
+    @Test
+    public void updateHolidayDataWhenUserNotFoundExceptionIsThrownTest() {
+        //GIVEN an exception should be thrown
+        doThrow(UserNotFoundException.class).when(userService).updateHoliday(any(HashMap.class));
+
+        //WHEN we try to update the value
+        ResponseEntity<Void> actualResponse = userController.updateHolidayData(new HashMap<>());
+
+        assertEquals(HttpStatus.NOT_FOUND, actualResponse.getStatusCode());
+        verify(userService, times(1)).updateHoliday(any(HashMap.class));
+    }
+
+    @Test
+    public void updateHolidayDataWhenExceptionIsThrownTest() {
+        //GIVEN an exception should be thrown
+        doThrow(RuntimeException.class).when(userService).updateHoliday(any(HashMap.class));
+
+        //WHEN we try to update the value
+        ResponseEntity<Void> actualResponse = userController.updateHolidayData(new HashMap<>());
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
+        verify(userService, times(1)).updateHoliday(any(HashMap.class));
     }
 }

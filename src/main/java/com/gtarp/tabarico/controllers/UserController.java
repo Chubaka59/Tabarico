@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Map;
 
 @Controller
 public class UserController {
@@ -87,6 +88,18 @@ public class UserController {
     public ResponseEntity<Void> updateBooleanValue(@RequestBody CheckboxUpdateRequestDto checkboxUpdateRequestDto) {
         try {
             userService.updateBooleanValue(checkboxUpdateRequestDto);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/updateHolidayData")
+    public ResponseEntity<Void> updateHolidayData(@RequestBody Map<String, Object> payload) {
+        try {
+            userService.updateHoliday(payload);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

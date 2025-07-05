@@ -17,7 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -129,7 +131,7 @@ public class UserServiceTest {
     @MethodSource("provideCheckboxUpdateRequestDtoForTest")
     public void updateBooleanValueTest(CheckboxUpdateRequestDto checkboxUpdateRequestDto) {
         //GIVEN we should get a user and save it
-        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, true, true, 30000, 10000, true, true);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, null, true, true, 30000, 10000, true, true);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -183,5 +185,64 @@ public class UserServiceTest {
 
         //THEN userRepository.save is called
         verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    public void updateHolidayTest() {
+        //GIVEN this should update an user
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
+        when(userRepository.save(any(User.class))).thenReturn(new User());
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("userId", "1");
+        map.put("newValue", true);
+        map.put("endOfHoliday", LocalDate.now().plusDays(1).toString());
+
+        //WHEN we try to update the holiday data
+        userService.updateHoliday(map);
+
+        //THEN the user has been updated
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    public void updateHolidayWhenDateIsNullTest() {
+        //GIVEN this should update an user
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
+        when(userRepository.save(any(User.class))).thenReturn(new User());
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("userId", "1");
+        map.put("newValue", true);
+
+        //WHEN we try to update the holiday data
+        userService.updateHoliday(map);
+
+        //THEN the user has been updated
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    public void disableHolidayWhenExpireTest() {
+        //GIVEN we should save a user
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, LocalDate.now().minusDays(1), true, true, 30000, 10000, true, true);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        //WHEN we try to disable the holidays
+        userService.disableHolidayWhenExpire(user);
+
+        //THEN the user has been updated
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    public void disableHolidayWhenExpireWhenDateIsNotPastTest() {
+        //GIVEN we should save a user
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, LocalDate.now().plusDays(1), true, true, 30000, 10000, true, true);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        //WHEN we try to disable the holidays
+        userService.disableHolidayWhenExpire(user);
+
+        //THEN the user has been updated
+        verify(userRepository, times(0)).save(any(User.class));
     }
 }

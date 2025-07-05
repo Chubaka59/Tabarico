@@ -12,6 +12,7 @@ import com.gtarp.tabarico.repositories.accounting.CustomerSaleRepository;
 import com.gtarp.tabarico.repositories.accounting.ExporterSaleRepository;
 import com.gtarp.tabarico.repositories.accounting.StockRepository;
 import com.gtarp.tabarico.services.AccountingService;
+import com.gtarp.tabarico.services.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,6 +44,8 @@ public class AccountingServiceImpl implements AccountingService {
     private ProductRepository productRepository;
     @Autowired
     private CustomerDirtySaleRateRepository customerDirtySaleRateRepository;
+    @Autowired
+    private UserService userService;
 
     @Override
     public ExporterSale createExporterSale(ExporterSaleDto exporterSaleDto, String username) {
@@ -143,6 +146,7 @@ public class AccountingServiceImpl implements AccountingService {
         List<DashboardDto> dashboardDtoList = new ArrayList<>();
         List<User> userList = userRepository.findAll();
         for (User user : userList) {
+            user = userService.disableHolidayWhenExpire(user);
             DashboardDto dashboardDto = new DashboardDto();
             dashboardDto.setUser(user);
 
@@ -165,6 +169,7 @@ public class AccountingServiceImpl implements AccountingService {
             dashboardDto.setDirtyMoneySalary(calculateDirtyMoneySalary(dashboardDto.getCustomerSalesDirtyMoney()));
 
             dashboardDto.setHoliday(user.isHoliday());
+            dashboardDto.setEndOfHoliday(user.getEndOfHoliday());
             dashboardDto.setWarning1(user.isWarning1());
             dashboardDto.setWarning2(user.isWarning2());
             dashboardDto.setCleanMoneySalaryPreviousWeek(user.getCleanMoneySalaryPreviousWeek());

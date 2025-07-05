@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,6 +21,7 @@ public class DashboardDto {
     private Integer cleanMoneySalary;
     private Integer dirtyMoneySalary;
     private boolean holiday;
+    private LocalDate endOfHoliday;
     private boolean warning1;
     private boolean warning2;
     private Integer cleanMoneySalaryPreviousWeek;
