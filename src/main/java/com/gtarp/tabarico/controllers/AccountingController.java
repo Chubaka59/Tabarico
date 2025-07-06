@@ -13,6 +13,7 @@ import com.gtarp.tabarico.entities.accounting.TypeOfStockMovement;
 import com.gtarp.tabarico.services.AccountingService;
 import com.gtarp.tabarico.services.CrudService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +24,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 public class AccountingController {
     @Autowired
@@ -47,6 +49,7 @@ public class AccountingController {
             accountingService.createExporterSale(exporterSaleDto, principal.getName());
             return getPersonalDashboardPage(model, principal);
         } catch (Exception e) {
+            log.error("Erreur lors de la création d'une vente exportateur", e);
             return "addExporterSale";
         }
     }
@@ -69,6 +72,7 @@ public class AccountingController {
             accountingService.createCustomerSale(customerSaleDto, principal.getName());
             return getPersonalDashboardPage(model, principal);
         } catch (Exception e) {
+            log.error("Erreur lors de la création d'une vente client", e);
             return "addCustomerSale";
         }
     }
@@ -93,6 +97,7 @@ public class AccountingController {
             accountingService.modifyStock(stockDto, principal.getName());
             return getPersonalDashboardPage(model, principal);
         } catch (Exception e) {
+            log.error("Erreur lors de la modification du stock", e);
             return getModifyStockPage(Optional.empty(), stockDto, model);
         }
     }

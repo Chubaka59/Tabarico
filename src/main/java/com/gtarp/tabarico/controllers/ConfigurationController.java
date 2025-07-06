@@ -10,6 +10,7 @@ import com.gtarp.tabarico.entities.Product;
 import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.services.CrudService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+@Slf4j
 @Controller
 public class ConfigurationController {
     @Autowired
@@ -54,6 +56,7 @@ public class ConfigurationController {
             productService.insert(productDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
+            log.error("Erreur lors de la création d'un produit", e);
             return "addProduct";
         }
     }
@@ -80,6 +83,7 @@ public class ConfigurationController {
             productService.update(id, productDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
+            log.error("Erreur lors de la modification d'un produit", e);
             return showUpdateProductPage(id, model);
         }
     }
@@ -99,6 +103,7 @@ public class ConfigurationController {
             contractService.insert(contractDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
+            log.error("Erreur lors de la création d'un contrat", e);
             return showAddContractPage(contractDto);
         }
     }
@@ -125,6 +130,7 @@ public class ConfigurationController {
             contractService.update(id, contractDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
+            log.error("Erreur lors de la modification d'un contrat", e);
             return showUpdateContractPage(id, model);
         }
     }
@@ -144,6 +150,7 @@ public class ConfigurationController {
             roleService.insert(roleDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
+            log.error("Erreur lors de la création d'un role", e);
             return showAddRolePage(roleDto);
         }
     }
@@ -170,6 +177,7 @@ public class ConfigurationController {
             roleService.update(id, roleDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
+            log.error("Erreur lors de la modification d'un role", e);
             return showUpdateRolePage(id, model);
         }
     }
@@ -190,6 +198,7 @@ public class ConfigurationController {
             customerDirtySaleRateService.update(id, customerDirtySaleRateDto);
             return getConfigurationPage(model);
         } catch (Exception e) {
+            log.error("Erreur lors de la modification du taux de redistribution en argent sale", e);
             return showUpdateCustomerDirtySaleRatePage(id, model);
         }
     }

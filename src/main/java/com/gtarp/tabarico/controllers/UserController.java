@@ -10,6 +10,7 @@ import com.gtarp.tabarico.services.UserService;
 import com.gtarp.tabarico.validation.OnResetPassword;
 import com.gtarp.tabarico.validation.OnUpdate;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.Map;
 
+@Slf4j
 @Controller
 public class UserController {
     @Autowired
@@ -53,6 +55,7 @@ public class UserController {
             userService.insert(userDto);
             return getUserListPage(model);
         } catch (Exception e) {
+            log.error("Erreur lors de la création de l'utilisateur", e);
             return showAddUserPage(userDto, model);
         }
     }
@@ -80,6 +83,7 @@ public class UserController {
             userService.update(id, userDto);
             return getUserListPage(model);
         } catch (Exception e) {
+            log.error("Erreur lors de la modification de l'utilisateur", e);
             return showUpdateUserPage(id, model);
         }
     }
@@ -90,8 +94,10 @@ public class UserController {
             userService.updateBooleanValue(checkboxUpdateRequestDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
+            log.error("Utilisateur non trouvé lors de la mise à jours des données boolean", e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            log.error("Erreur lors de la modification de donnée boolean de l'utilisateur", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -102,8 +108,10 @@ public class UserController {
             userService.updateHoliday(payload);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
+            log.error("Utilisateur non trouvé lors de la mise à jours des données de vacances", e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            log.error("Erreur lors de la modification de donnée de vacances de l'utilisateur", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -124,6 +132,7 @@ public class UserController {
             userService.updatePassword(id, userDto);
             return accountingController.getPersonalDashboardPage(model, principal);
         } catch (Exception e) {
+            log.error("Erreur lors de la modification du mot de passe de l'utilisateur", e);
             return getResetPasswordPage(model, principal);
         }
     }
