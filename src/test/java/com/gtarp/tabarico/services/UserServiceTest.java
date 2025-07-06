@@ -8,6 +8,7 @@ import com.gtarp.tabarico.exception.UserAlreadyExistException;
 import com.gtarp.tabarico.exception.UserNotFoundException;
 import com.gtarp.tabarico.repositories.UserRepository;
 import com.gtarp.tabarico.services.impl.UserServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,7 +17,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +39,16 @@ public class UserServiceTest {
     private UserServiceImpl userService;
     @Mock
     private final UserRepository userRepository = mock(UserRepository.class);
+    @Mock
+    private MultipartFile multipartFile;
+    @Mock
+    private InputStream inputStream;
+
+    @BeforeEach
+    void setUp() {
+        // Injecte manuellement la valeur de 'uploadDir' dans le champ privé de userService
+        ReflectionTestUtils.setField(userService, "uploadDir", "mocked_test_uploads");
+    }
 
     @Test
     public void getAllUsersTest() {
@@ -73,12 +88,16 @@ public class UserServiceTest {
     }
 
     @Test
-    public void addUserTest() {
+    public void addUserTest() throws IOException {
         //GIVEN the user we would add doesn't exist
         when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.empty());
-        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false);
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false, multipartFile);
         User user = new User();
         when(userRepository.save(any(User.class))).thenReturn(user);
+        when(multipartFile.isEmpty()).thenReturn(false);
+        when(multipartFile.getContentType()).thenReturn("png");
+        when(multipartFile.getOriginalFilename()).thenReturn("testFile.png");
+        when(multipartFile.getInputStream()).thenReturn(inputStream);
 
         //WHEN we try to add this user
         userService.insert(userDto);
@@ -91,7 +110,7 @@ public class UserServiceTest {
     public void addUserWhenUserAlreadyExistsTest() {
         //GIVEN the user we would add already exist
         User user = new User();
-        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false);
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false, null);
         when(userRepository.findUserByUsername(anyString())).thenReturn(Optional.of(user));
 
         //WHEN we try to add the user THEN an exception is thrown
@@ -99,11 +118,15 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUserTest() {
+    public void updateUserTest() throws IOException {
         //GIVEN there is a user to update
         User existingUser = new User();
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(existingUser));
-        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false);
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false, null);
+        when(multipartFile.isEmpty()).thenReturn(false);
+        when(multipartFile.getContentType()).thenReturn("png");
+        when(multipartFile.getOriginalFilename()).thenReturn("testFile.png");
+        when(multipartFile.getInputStream()).thenReturn(inputStream);
 
         //WHEN we try to update the user
         userService.update(1, userDto);
@@ -115,7 +138,7 @@ public class UserServiceTest {
     @Test
     public void deleteUserTest() {
         //GIVEN there is a user to delete
-        User existingUser = new User();
+        User existingUser = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, null, true, true, 30000, 10000, true, true, "testFile.png");
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(existingUser));
         doNothing().when(userRepository).delete(any(User.class));
 
@@ -131,7 +154,7 @@ public class UserServiceTest {
     @MethodSource("provideCheckboxUpdateRequestDtoForTest")
     public void updateBooleanValueTest(CheckboxUpdateRequestDto checkboxUpdateRequestDto) {
         //GIVEN we should get a user and save it
-        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, null, true, true, 30000, 10000, true, true);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, null, true, true, 30000, 10000, true, true, null);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -178,7 +201,7 @@ public class UserServiceTest {
         //GIVEN there is a user to update
         User existingUser = new User();
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(existingUser));
-        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false);
+        UserDto userDto = new UserDto(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", new Role(), false, null);
 
         //WHEN we try to update the user
         userService.updatePassword(1, userDto);
@@ -223,7 +246,7 @@ public class UserServiceTest {
     @Test
     public void disableHolidayWhenExpireTest() {
         //GIVEN we should save a user
-        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, LocalDate.now().minusDays(1), true, true, 30000, 10000, true, true);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, LocalDate.now().minusDays(1), true, true, 30000, 10000, true, true, null);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         //WHEN we try to disable the holidays
@@ -236,7 +259,7 @@ public class UserServiceTest {
     @Test
     public void disableHolidayWhenExpireWhenDateIsNotPastTest() {
         //GIVEN we should save a user
-        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, LocalDate.now().plusDays(1), true, true, 30000, 10000, true, true);
+        User user = new User(1, "testUsername", "testPassword", "testLastName", "testFirstName", "testPhone", true, new Role(), true, LocalDate.now().plusDays(1), true, true, 30000, 10000, true, true, null);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         //WHEN we try to disable the holidays

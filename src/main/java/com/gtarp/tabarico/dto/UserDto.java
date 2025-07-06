@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -33,4 +34,5 @@ public class UserDto {
     @NotNull(groups = {OnUpdate.class}, message = "Sélectionnez un role")
     private Role role;
     private boolean admin;
+    private MultipartFile identityCardImage;
 }

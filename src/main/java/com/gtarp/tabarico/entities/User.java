@@ -43,6 +43,7 @@ public class User implements UpdatableEntity<User, UserDto> {
     private Integer dirtyMoneySalaryPreviousWeek;
     private boolean quota = false;
     private boolean exporterQuota = false;
+    private String identityCardImage;
 
     public User(UserDto userDto) {
         this.username = userDto.getUsername();

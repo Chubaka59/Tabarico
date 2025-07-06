@@ -54,6 +54,7 @@
                     <th sec:authorize="!hasAuthority('MILICE')">Telephone</th>
                     <th>Role</th>
                     <th sec:authorize="!hasAuthority('MILICE')">Admin</th>
+                    <th sec:authorize="!hasAuthority('MILICE')">Carte d'identité</th>
                     <th sec:authorize="!hasAuthority('MILICE')">Action</th>
                 </tr>
                 </thead>
@@ -65,6 +66,16 @@
                     <td th:text="${user.phone}" sec:authorize="!hasAuthority('MILICE')"></td>
                     <td th:text="${user.role.name}"></td>
                     <td th:text="${user.admin}" sec:authorize="!hasAuthority('MILICE')"></td>
+                    <td sec:authorize="!hasAuthority('MILICE')">
+                        <div th:if="${user.identityCardImage}">
+                            <a th:href="@{'/images/identities/' + ${user.identityCardImage}}" target="_blank" class="btn btn-info btn-sm">
+                                Voir la carte d'identité
+                            </a>
+                        </div>
+                        <div th:unless="${user.identityCardImage}">
+                            Pas de carte
+                        </div>
+                    </td>
                     <td style="width: 20%" class="text-center" sec:authorize="!hasAuthority('MILICE')">
                         <a th:href="@{/users/{id}(id=${user.id})}">Edit</a>&nbsp;|&nbsp;
                         <a th:href="@{/users/{id}/delete(id=${user.id})}">Delete</a>

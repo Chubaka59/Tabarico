@@ -48,7 +48,7 @@
         </div>
 
         <div class="row">
-            <form action="#" th:action="@{/users/{id}(id=${userDto.id})}" th:object="${userDto}" method="post" class="form-horizontal" style="width: 100%">
+            <form action="#" th:action="@{/users/{id}(id=${userDto.id})}" th:object="${userDto}" method="post" class="form-horizontal" style="width: 100%" enctype="multipart/form-data">
 
                 <div class="form-group">
                     <label for="firstName" class="col-sm-2 control-label">Prénom</label>
@@ -101,6 +101,11 @@
                         <input type="checkbox" th:field="*{admin}" id="admin" placeholder="Admin" class="col-4">
                         <p class="text-danger" th:if="${#fields.hasErrors('admin')}" th:errors="*{admin}"></p>
                     </div>
+                </div>
+                <div>
+                    <label for="identityCardImage" class="form-label">Carte d'identité</label>
+                    <input type="file" th:field="*{identityCardImage}" id="identityCardImage" placeholder="Carte d'identité">
+                    <p class="text-danger" th:if="${#fields.hasErrors('identityCardImage')}" th:errors="*{identityCardImage}"></p>
                 </div>
 
                 <div class="form-group">

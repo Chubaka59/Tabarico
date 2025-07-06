@@ -3,14 +3,25 @@ package com.gtarp.tabarico.services.impl;
 import com.gtarp.tabarico.dto.CheckboxUpdateRequestDto;
 import com.gtarp.tabarico.dto.UserDto;
 import com.gtarp.tabarico.entities.User;
+import com.gtarp.tabarico.exception.FileTypeException;
+import com.gtarp.tabarico.exception.StorageException;
 import com.gtarp.tabarico.exception.UserAlreadyExistException;
 import com.gtarp.tabarico.exception.UserNotFoundException;
 import com.gtarp.tabarico.repositories.UserRepository;
 import com.gtarp.tabarico.services.AbstractCrudService;
 import com.gtarp.tabarico.services.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,7 +45,19 @@ public class UserServiceImpl extends AbstractCrudService<User, UserRepository, U
             throw new UserAlreadyExistException(userDto.getUsername());
         }
         User newUser = new User(userDto);
+        if (userDto.getIdentityCardImage() != null && !userDto.getIdentityCardImage().isEmpty()) {
+            newUser.setIdentityCardImage(saveIdentityCardImage(userDto.getIdentityCardImage(), newUser.getUsername()));
+        }
         return this.repository.save(newUser);
+    }
+
+    @Override
+    public User update(Integer id, UserDto userDto) {
+        User updatedUser = getById(id).update(userDto);
+        if (userDto.getIdentityCardImage() != null && !userDto.getIdentityCardImage().isEmpty()) {
+            updatedUser.setIdentityCardImage(saveIdentityCardImage(userDto.getIdentityCardImage(), updatedUser.getUsername()));
+        }
+        return repository.save(updatedUser);
     }
 
     public void updateBooleanValue(CheckboxUpdateRequestDto checkboxUpdateRequestDto) {
@@ -98,5 +121,68 @@ public class UserServiceImpl extends AbstractCrudService<User, UserRepository, U
             return this.repository.save(user);
         }
         return user;
+    }
+
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+
+    private String saveIdentityCardImage(MultipartFile file, String username) {
+        String[] imageFormat = new String[]{"jpeg", "png", "webp"};
+        Path destinationFile;
+        String fileName;
+
+        if (file == null || file.isEmpty()) {
+            throw new StorageException("Failed to store empty file.");
+        }
+        try {
+            if (Arrays.stream(imageFormat).noneMatch(file.getContentType()::contains)) {
+                throw new FileTypeException(file.getContentType() + "is not a valid type of file");
+            }
+
+            // Générer un nom de fichier lié a l'utilisateur
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = "";
+            if (originalFilename != null && originalFilename.lastIndexOf(".") != -1) {
+                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            fileName = "CarteIdentite_" + username + fileExtension;
+
+            Path location = Path.of(uploadDir);
+
+            // Crée le répertoire s'il n'existe pas
+            if (!Files.exists(location)) {
+                Files.createDirectories(location);
+            }
+
+            destinationFile = location.resolve(fileName);
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw new StorageException("Failed to store file.", e);
+        }
+        return fileName;
+    }
+
+    private void deleteIdentityCardImage(String fileName) {
+        if (fileName == null || fileName.trim().isEmpty()) {
+            return;
+        }
+
+        Path filePath = Paths.get(uploadDir).resolve(fileName);
+        try {
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+            }
+        } catch (IOException e) {
+            //TODO Logger a créer
+        }
+    }
+
+    @Override
+    public void delete(Integer id) {
+        User user = getById(id);
+        repository.delete(user);
+        deleteIdentityCardImage(user.getIdentityCardImage());
     }
 }

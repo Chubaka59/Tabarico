@@ -53,7 +53,7 @@ public class UserController {
             userService.insert(userDto);
             return getUserListPage(model);
         } catch (Exception e) {
-            return "addUser";
+            return showAddUserPage(userDto, model);
         }
     }
 
