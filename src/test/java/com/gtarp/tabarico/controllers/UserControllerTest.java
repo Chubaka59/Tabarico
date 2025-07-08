@@ -1,6 +1,7 @@
 package com.gtarp.tabarico.controllers;
 
 import com.gtarp.tabarico.dto.CheckboxUpdateRequestDto;
+import com.gtarp.tabarico.dto.HolidayModificationDto;
 import com.gtarp.tabarico.dto.RoleDto;
 import com.gtarp.tabarico.dto.UserDto;
 import com.gtarp.tabarico.entities.Role;
@@ -20,7 +21,6 @@ import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -283,37 +283,37 @@ public class UserControllerTest {
     @Test
     public void updateHolidayDataTest() {
         //GIVEN we should update the holiday datas and get a response
-        doNothing().when(userService).updateHoliday(any(HashMap.class));
+        doNothing().when(userService).updateHoliday(any(HolidayModificationDto.class));
 
         //WHEN we try to update the data
-        ResponseEntity<Void> actualResponse = userController.updateHolidayData(new HashMap());
+        ResponseEntity<Void> actualResponse = userController.updateHolidayData(new HolidayModificationDto());
 
         //THEN we get the correct response and the data has been updated
         assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
-        verify(userService, times(1)).updateHoliday(any(HashMap.class));
+        verify(userService, times(1)).updateHoliday(any(HolidayModificationDto.class));
     }
 
     @Test
     public void updateHolidayDataWhenUserNotFoundExceptionIsThrownTest() {
         //GIVEN an exception should be thrown
-        doThrow(UserNotFoundException.class).when(userService).updateHoliday(any(HashMap.class));
+        doThrow(UserNotFoundException.class).when(userService).updateHoliday(any(HolidayModificationDto.class));
 
         //WHEN we try to update the value
-        ResponseEntity<Void> actualResponse = userController.updateHolidayData(new HashMap<>());
+        ResponseEntity<Void> actualResponse = userController.updateHolidayData(new HolidayModificationDto());
 
         assertEquals(HttpStatus.NOT_FOUND, actualResponse.getStatusCode());
-        verify(userService, times(1)).updateHoliday(any(HashMap.class));
+        verify(userService, times(1)).updateHoliday(any(HolidayModificationDto.class));
     }
 
     @Test
     public void updateHolidayDataWhenExceptionIsThrownTest() {
         //GIVEN an exception should be thrown
-        doThrow(RuntimeException.class).when(userService).updateHoliday(any(HashMap.class));
+        doThrow(RuntimeException.class).when(userService).updateHoliday(any(HolidayModificationDto.class));
 
         //WHEN we try to update the value
-        ResponseEntity<Void> actualResponse = userController.updateHolidayData(new HashMap<>());
+        ResponseEntity<Void> actualResponse = userController.updateHolidayData(new HolidayModificationDto());
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, actualResponse.getStatusCode());
-        verify(userService, times(1)).updateHoliday(any(HashMap.class));
+        verify(userService, times(1)).updateHoliday(any(HolidayModificationDto.class));
     }
 }

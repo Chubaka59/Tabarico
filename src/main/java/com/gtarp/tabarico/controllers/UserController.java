@@ -1,6 +1,7 @@
 package com.gtarp.tabarico.controllers;
 
 import com.gtarp.tabarico.dto.CheckboxUpdateRequestDto;
+import com.gtarp.tabarico.dto.HolidayModificationDto;
 import com.gtarp.tabarico.dto.RoleDto;
 import com.gtarp.tabarico.dto.UserDto;
 import com.gtarp.tabarico.entities.Role;
@@ -21,7 +22,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -68,7 +68,9 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public String showUpdateUserPage(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("userDto", userService.getById(id));
+        if (!model.containsAttribute("userDto")) {
+            model.addAttribute("userDto", userService.getById(id));
+        }
         model.addAttribute("roles", roleService.getAll());
         return "updateUser";
     }
@@ -77,7 +79,7 @@ public class UserController {
     public String updateUser(@PathVariable("id") Integer id, @Validated(OnUpdate.class) @ModelAttribute("userDto") UserDto userDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("userDto", userDto);
-            return "updateUser";
+            return showUpdateUserPage(id, model);
         }
         try {
             userService.update(id, userDto);
@@ -103,9 +105,9 @@ public class UserController {
     }
 
     @PostMapping("/updateHolidayData")
-    public ResponseEntity<Void> updateHolidayData(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Void> updateHolidayData(@RequestBody HolidayModificationDto holidayModificationDto) {
         try {
-            userService.updateHoliday(payload);
+            userService.updateHoliday(holidayModificationDto);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (UserNotFoundException e) {
             log.error("Utilisateur non trouvé lors de la mise à jours des données de vacances", e);

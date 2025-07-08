@@ -1,6 +1,7 @@
 package com.gtarp.tabarico.services;
 
 import com.gtarp.tabarico.dto.CheckboxUpdateRequestDto;
+import com.gtarp.tabarico.dto.HolidayModificationDto;
 import com.gtarp.tabarico.dto.UserDto;
 import com.gtarp.tabarico.entities.Role;
 import com.gtarp.tabarico.entities.User;
@@ -24,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -215,13 +215,10 @@ public class UserServiceTest {
         //GIVEN this should update an user
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
         when(userRepository.save(any(User.class))).thenReturn(new User());
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("userId", "1");
-        map.put("newValue", true);
-        map.put("endOfHoliday", LocalDate.now().plusDays(1).toString());
+        HolidayModificationDto holidayModificationDto = new HolidayModificationDto(1, true, LocalDate.now().plusDays(1));
 
         //WHEN we try to update the holiday data
-        userService.updateHoliday(map);
+        userService.updateHoliday(holidayModificationDto);
 
         //THEN the user has been updated
         verify(userRepository, times(1)).save(any(User.class));
@@ -232,12 +229,11 @@ public class UserServiceTest {
         //GIVEN this should update an user
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
         when(userRepository.save(any(User.class))).thenReturn(new User());
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("userId", "1");
-        map.put("newValue", true);
+        HolidayModificationDto holidayModificationDto = new HolidayModificationDto(1, true, null);
+
 
         //WHEN we try to update the holiday data
-        userService.updateHoliday(map);
+        userService.updateHoliday(holidayModificationDto);
 
         //THEN the user has been updated
         verify(userRepository, times(1)).save(any(User.class));

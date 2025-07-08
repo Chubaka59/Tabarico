@@ -30,7 +30,7 @@ public class ConfigurationController {
     @Autowired
     private CrudService<Role, RoleDto> roleService;
     @Autowired
-    private CrudService<CustomerDirtySaleRate, CustomerDirtySaleRateDto> customerDirtySaleRateService;
+        private CrudService<CustomerDirtySaleRate, CustomerDirtySaleRateDto> customerDirtySaleRateService;
 
     @GetMapping("/configuration")
     public String getConfigurationPage(Model model) {
@@ -41,7 +41,7 @@ public class ConfigurationController {
         return "configuration";
     }
 
-    @GetMapping("/configuration/addproduct")
+    @GetMapping("/configuration/addProduct")
     public String showAddProductPage(ProductDto productDto) {
         return "addProduct";
     }
@@ -69,7 +69,9 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/products/{id}")
     public String showUpdateProductPage(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("productDto", productService.getById(id));
+        if (!model.containsAttribute("productDto")) {
+            model.addAttribute("productDto", productService.getById(id));
+        }
         return "updateProduct";
     }
 
@@ -116,7 +118,9 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/contracts/{id}")
     public String showUpdateContractPage(@PathVariable Integer id, Model model) {
-        model.addAttribute("contractDto", contractService.getById(id));
+        if (!model.containsAttribute("contractDto")) {
+            model.addAttribute("contractDto", contractService.getById(id));
+        }
         return "updateContract";
     }
 
@@ -163,7 +167,9 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/roles/{id}")
     public String showUpdateRolePage(@PathVariable Integer id, Model model) {
-        model.addAttribute("roleDto", roleService.getById(id));
+        if (!model.containsAttribute("roleDto")) {
+            model.addAttribute("roleDto", roleService.getById(id));
+        }
         return "updateRole";
     }
 
@@ -184,7 +190,9 @@ public class ConfigurationController {
 
     @GetMapping("/configuration/customerDirtySaleRates/{id}")
     public String showUpdateCustomerDirtySaleRatePage(@PathVariable Integer id, Model model) {
-        model.addAttribute("customerDirtySaleRateDto", customerDirtySaleRateService.getById(id));
+        if (!model.containsAttribute("customerDirtySaleRateDto")) {
+            model.addAttribute("customerDirtySaleRateDto", customerDirtySaleRateService.getById(id));
+        }
         return "updateCustomerDirtySaleRate";
     }
 

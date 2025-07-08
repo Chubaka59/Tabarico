@@ -13,7 +13,7 @@ import java.time.LocalDate;
 
 @Entity
 @Data
-@Table
+@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UpdatableEntity<User, UserDto> {

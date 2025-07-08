@@ -21,11 +21,11 @@ public class CustomerDirtySaleRate implements UpdatableEntity<CustomerDirtySaleR
     @Digits(integer = 3, fraction = 0)
     @Min(0)
     @Max(100)
-    private Integer CustomerDirtySaleRate;
+    private Integer customerDirtySaleRate;
 
     @Override
     public CustomerDirtySaleRate update(CustomerDirtySaleRateDto customerDirtySaleRateDto) {
-        this.CustomerDirtySaleRate = customerDirtySaleRateDto.getCustomerDirtySaleRate();
+        this.customerDirtySaleRate = customerDirtySaleRateDto.getCustomerDirtySaleRate();
         return this;
     }
 }

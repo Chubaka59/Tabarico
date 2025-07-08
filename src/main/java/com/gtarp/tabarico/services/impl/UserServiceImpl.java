@@ -1,6 +1,7 @@
 package com.gtarp.tabarico.services.impl;
 
 import com.gtarp.tabarico.dto.CheckboxUpdateRequestDto;
+import com.gtarp.tabarico.dto.HolidayModificationDto;
 import com.gtarp.tabarico.dto.UserDto;
 import com.gtarp.tabarico.entities.User;
 import com.gtarp.tabarico.exception.FileTypeException;
@@ -22,7 +23,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -93,23 +93,15 @@ public class UserServiceImpl extends AbstractCrudService<User, UserRepository, U
     }
 
     @Override
-    public void updateHoliday(Map<String, Object> payload) {
-        Integer userId = Integer.parseInt((String) payload.get("userId"));
-        Boolean holidayValue = (Boolean) payload.get("newValue");
-        String endOfHolidayStr = (String) payload.get("endOfHoliday");
-
-        LocalDate endOfHoliday = null;
-        if (endOfHolidayStr != null && !endOfHolidayStr.isEmpty()) {
-            endOfHoliday = LocalDate.parse(endOfHolidayStr);
-            if (endOfHoliday.isBefore(LocalDate.now())) {
-                endOfHoliday = null;
-                holidayValue = false;
-            }
+    public void updateHoliday(HolidayModificationDto holidayModificationDto) {
+        if (holidayModificationDto.getEndOfHoliday() == null || holidayModificationDto.getEndOfHoliday().isBefore(LocalDate.now())) {
+            holidayModificationDto.setEndOfHoliday(null);
+            holidayModificationDto.setNewValue(false);
         }
 
-        User user = getById(userId);
-        user.setHoliday(holidayValue);
-        user.setEndOfHoliday(endOfHoliday);
+        User user = getById(holidayModificationDto.getUserId());
+        user.setHoliday(holidayModificationDto.isNewValue());
+        user.setEndOfHoliday(holidayModificationDto.getEndOfHoliday());
         this.repository.save(user);
     }
 
