@@ -3,26 +3,38 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
+    <meta name="description" content="Tabarico - Personal dashboard" />
+    <meta name="author" content="Joffrey Lefebvre" />
     <title>Tabarico</title>
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="/css/styles.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 <!-- Navigation-->
-<nav class="navbar navbar-expand-lg navbar-light bg-light" sec:authorize="!hasAuthority('MILICE')">
+<nav class="navbar navbar-expand-lg navbar-light bg-dark" sec:authorize="!hasAuthority('MILICE')">
     <div class="container px-4 px-lg-5">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/personalDashboard">Compta Personnelle</a></li>
-                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/addExporterSale">Vente exportateur</a></li>
-                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/addCustomerSale">Vente client</a></li>
-                <li class="nav-item" sec:authorize="hasAuthority('RESPONSABLE')"><a class="nav-link active" aria-current="page" href="/dashboard">Dashboard</a></li>
-                <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" href="/users">Utilisateurs</a></li>
-                <li class="nav-item" sec:authorize="hasAuthority('RESPONSABLE')"><a class="nav-link active" aria-current="page" href="/modifyStock">Stock</a></li>
-                <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" href="/configuration">Configuration</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown-1" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Compta</a>
+                    <ul class="dropdown-menu bg-dark" aria-labelledby="dropdownMenuButton">
+                        <li class="dropdown-item"><a class="nav-link active" aria-current="page" href="/personalDashboard">Compta Personnelle</a></li>
+                        <li class="dropdown-item"><a class="nav-link active" aria-current="page" href="/addExporterSale">Vente exportateur</a></li>
+                        <li class="dropdown-item"><a class="nav-link active" aria-current="page" href="/addCustomerSale">Vente client</a></li>
+                        <li class="dropdown-item" sec:authorize="hasAuthority('RESPONSABLE')">
+                            <a class="nav-link active" aria-current="page" href="/dashboard">Dashboard</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown" sec:authorize="hasAuthority('RESPONSABLE')"><a class="nav-link active" aria-current="page" href="/modifyStock">Stock</a></li>
+                <li class="nav-item dropdown" sec:authorize="hasAuthority('ADMIN')">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Administration</a>
+                    <ul class="dropdown-menu bg-dark" aria-labelledby="dropdownMenuButton">
+                        <li class="dropdown-item"><a class="nav-link active" aria-current="page" href="/users">Utilisateurs</a></li>
+                        <li class="dropdown-item"><a class="nav-link active" aria-current="page" href="/configuration">Configuration</a></li>
+                    </ul>
+                </li>
                 <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link active" href="/resetPassword">Changer de mot de passe</a></li>
                 <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link active" href="/logout">Se deconnecter</a></li>
                 <li class="nav-item" sec:authorize="isAnonymous()"><a class="nav-link active" href="/login">Se connecter</a></li>
@@ -30,90 +42,109 @@
         </div>
     </div>
 </nav>
-<header class="bg-dark py-5">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">Tabarico</h1>
-            <p class="lead fw-normal text-white-50 mb-0">Fumer tue mais ca nous enrichit</p>
-        </div>
-    </div>
+<header class="pb-2">
+    <img class="banniere" src="assets/banniere.png" alt="Banniere tabarico">
 </header>
-<section class="py-5">
     <div class="container px-4 px-lg-5 my-5">
-        <h2>Compta personnelle</h2>
-        <div class="container">
+        <section>
             <div class="row">
-                <div class="col-3">
-                    <h3>Prime de la semaine</h3>
-                    <h3 th:text="${personalDashboardDto.cleanMoneySalary}"></h3>
+                <h1>Compta personnelle</h1>
+            </div>
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="border rounded p-3 mb-3 text-center vignette">
+                            <h3>Prime de la semaine</h3>
+                            <hr class="my-2">
+                            <h3 th:text="${personalDashboardDto.cleanMoneySalary} + ' $'"></h3>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border rounded p-3 mb-3 text-center vignette">
+                            <h3>Prime sale de la semaine</h3>
+                            <hr class="my-2">
+                            <h3 th:text="${personalDashboardDto.dirtyMoneySalary} + ' $'"></h3>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border rounded p-3 mb-3 text-center vignette">
+                            <h3>Quota</h3>
+                            <hr class="my-2">
+                            <img th:if="${personalDashboardDto.quota == true}" src="assets/ok.png" alt="ok checkbox" width="30%">
+                            <img th:unless="${personalDashboardDto.quota == true}" src="assets/nok.png" alt="nok checkbox" width="25%">
+                        </div>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <h3>Prime sale de la semaine</h3>
-                    <h3 th:text="${personalDashboardDto.dirtyMoneySalary}"></h3>
-                </div>
-                <div class="col-3">
-                    <h3>Prime de la semaine dernière</h3>
-                    <h3 th:text="${personalDashboardDto.cleanMoneySalaryPreviousWeek}"></h3>
-                </div>
-                <div class="col-3">
-                    <h3>Prime sale de la semaine dernière</h3>
-                    <h3 th:text="${personalDashboardDto.dirtyMoneySalaryPreviousWeek}"></h3>
+                <div class="row">
+                    <div class="col-4">
+                        <div class="border rounded p-3 mb-3 text-center vignette">
+                            <h3>Prime de la semaine dernière</h3>
+                            <hr class="my-2">
+                            <h3 th:text="${personalDashboardDto.cleanMoneySalaryPreviousWeek != null} ? ${personalDashboardDto.cleanMoneySalaryPreviousWeek} : 0 + ' $'"></h3>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border rounded p-3 mb-3 text-center vignette">
+                            <h3>Prime sale de la semaine dernière</h3>
+                            <hr class="my-2">
+                            <h3 th:text="${personalDashboardDto.dirtyMoneySalaryPreviousWeek != null} ? ${personalDashboardDto.dirtyMoneySalaryPreviousWeek} : 0 + ' $'"></h3>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border rounded p-3 mb-3 text-center vignette">
+                            <h3>Quota export</h3>
+                            <hr class="my-2">
+                            <img th:if="${personalDashboardDto.exporterQuota == true}" src="assets/ok.png" alt="ok checkbox" width="30%">
+                            <img th:unless="${personalDashboardDto.exporterQuota == true}" src="assets/nok.png" alt="ok checkbox" width="30%">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-3">
-                    <h3>Quota</h3>
-                    <h3 th:text="${personalDashboardDto.quota}"></h3>
-                </div>
-                <div class="col-3">
-                    <h3>Quota export</h3>
-                    <h3 th:text="${personalDashboardDto.exporterQuota}"></h3>
-                </div>
-            </div>
-        </div>
-
-        <h2>Historique exportateur de la semaine</h2>
-        <table class="table table-striped table-hover table-bordered align-middle text-center">
-            <thead class="table-dark">
-            <tr>
-                <th>Date</th>
-                <th>Niveau</th>
-                <th>Quantité</th>
-                <th>Montant employé</th>
-                <th>Montant entreprise</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="exporterSale : ${personalDashboardDto.exporterSaleList}">
-                <td th:text="${exporterSale.date}"></td>
-                <td th:text="${exporterSale.level}"></td>
-                <td th:text="${exporterSale.quantity}"></td>
-                <td th:text="${#numbers.formatDecimal(exporterSale.employeeAmount,0,0) + '$'}"></td>
-                <td th:text="${#numbers.formatDecimal(exporterSale.companyAmount,0,0) + '$'}"></td>
-            </tbody>
-        </table>
-
-        <h2>Historique vente client de la semaine</h2>
-        <table class="table table-striped table-hover table-bordered align-middle text-center">
-            <thead class="table-dark">
-            <tr>
-                <th>Date</th>
-                <th>Produit</th>
-                <th>Type de vente</th>
-                <th>Quantité</th>
-                <th>Montant</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="customerSale : ${personalDashboardDto.customerSaleList}">
-                <td th:text="${customerSale.date}"></td>
-                <td th:text="${customerSale.product.name}"></td>
-                <td th:text="${customerSale.typeOfSale}"></td>
-                <td th:text="${customerSale.quantity}"></td>
-                <td th:text="${#numbers.formatDecimal(customerSale.amount,0,0) + '$'}"></td>
-            </tbody>
-        </table>
+        </section>
+        <section class="py-5">
+            <h2>Historique de vos ventes exportateur de la semaine</h2>
+            <table class="table table-striped table-hover table-bordered align-middle text-center">
+                <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Niveau</th>
+                    <th>Quantité</th>
+                    <th>Montant employé</th>
+                    <th>Montant entreprise</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="exporterSale : ${personalDashboardDto.exporterSaleList}">
+                    <td th:text="${#temporals.format(exporterSale.date, #locale)}"></td>
+                    <td th:text="${exporterSale.level}"></td>
+                    <td th:text="${exporterSale.quantity}"></td>
+                    <td th:text="${#numbers.formatDecimal(exporterSale.employeeAmount,0,0) + ' $'}"></td>
+                    <td th:text="${#numbers.formatDecimal(exporterSale.companyAmount,0,0) + ' $'}"></td>
+                </tbody>
+            </table>
+        </section>
+        <section class="py-5">
+            <h2>Historique de vos ventes client de la semaine</h2>
+            <table class="table table-striped table-hover table-bordered align-middle text-center">
+                <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Produit</th>
+                    <th>Type de vente</th>
+                    <th>Quantité</th>
+                    <th>Montant</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="customerSale : ${personalDashboardDto.customerSaleList}">
+                    <td th:text="${#temporals.format(customerSale.date, #locale)}"></td>
+                    <td th:text="${customerSale.product.name}"></td>
+                    <td th:text="${customerSale.typeOfSale}"></td>
+                    <td th:text="${customerSale.quantity}"></td>
+                    <td th:text="${#numbers.formatDecimal(customerSale.amount,0,0) + ' $'}"></td>
+                </tbody>
+            </table>
+        </section>
     </div>
-</section>
 </body>
 </html>

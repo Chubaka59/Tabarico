@@ -43,6 +43,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
+                        .loginPage("/login")
+                        .permitAll()
                         .successHandler((request, response, authentication) -> {
                             if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("MILICE"))) {
                                 response.sendRedirect("/users");
@@ -67,6 +69,6 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.debug(true)
                 .ignoring()
-                .requestMatchers("/css/**", "/assets/**");
+                .requestMatchers("/css/**", "/assets/**", "/static/assets/**");
     }
 }

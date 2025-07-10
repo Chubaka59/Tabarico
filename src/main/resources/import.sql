@@ -2,8 +2,8 @@ insert into role(name, redistribution_rate, salary) values ('Responsable', 40, 3
 insert into role(name, redistribution_rate, salary) values ('CDI', 35, 20000)
 insert into role(name) values ('Milice')
 
-insert into users(first_name, last_name, password, phone, username, admin, role_id, holiday, warning1, warning2, quota, exporter_quota) values ('Ramon', 'Cruz', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', 'ramon.cruz',1, 1, false, false, false, true, true)
-insert into users(first_name, last_name, password, phone, username, admin, role_id, holiday, end_of_holiday, warning1, warning2, quota, exporter_quota) values ('Test', '1', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', '1',0, 1, true, '2025-12-12', false, false, true, true)
+insert into users(first_name, last_name, password, phone, username, admin, role_id, holiday, warning1, warning2, quota, exporter_quota) values ('Ramon', 'Cruz', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', 'ramon.cruz',1, 1, false, false, false, true, false)
+insert into users(first_name, last_name, password, phone, username, admin, role_id, holiday, end_of_holiday, warning1, warning2, quota, exporter_quota) values ('Test', '1', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', '1',0, 1, true, '2025-12-12', false, false, false, true)
 insert into users(first_name, last_name, password, phone, username, admin, role_id, holiday, end_of_holiday, warning1, warning2, quota, exporter_quota) values ('Test', '2', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', '2',0, 2, true, '2025-01-01', false, false, true, true)
 insert into users(first_name, last_name, password, phone, username, admin, role_id, holiday, warning1, warning2, quota, exporter_quota) values ('Test', '3', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', '3',0, 2, false, false, false, true, true)
 insert into users(first_name, last_name, password, phone, username, admin, role_id, holiday, warning1, warning2, quota, exporter_quota) values ('Test', '4', '$2a$10$UCEisteDN7GY7d7voMGYZOeGncH4Jd4daExzPeninBel6v8ybqIzG', '123456789', '4',0, 2, false, false, false, true, true)
@@ -45,8 +45,8 @@ insert into stock(date, type_of_stock_movement, product_id, operation_stock, qua
 
 insert into customer_dirty_sale_rate(id, customer_dirty_sale_rate) values (1, 35)
 
-insert into exporter_sale(company_amount, employee_amount, level, quantity, user_id, date) values (10000, 100000, 87, 1000, 1, '2025-07-01')
-insert into exporter_sale(company_amount, employee_amount, level, quantity, user_id, date) values (10000, 100000, 87, 1000, 1, '2025-06-28')
+insert into exporter_sale(company_amount, employee_amount, level, quantity, user_id, date) values (10000, 100000, 87, 1000, 1, '2025-07-09')
+insert into exporter_sale(company_amount, employee_amount, level, quantity, user_id, date) values (10000, 100000, 87, 1000, 1, '2025-07-08')
 insert into exporter_sale(company_amount, employee_amount, level, quantity, user_id, date) values (10000, 100000, 87, 1000, 10, '2025-07-01')
 insert into exporter_sale(company_amount, employee_amount, level, quantity, user_id, date) values (10000, 100000, 87, 1000, 15, '2025-07-01')
 insert into exporter_sale(company_amount, employee_amount, level, quantity, user_id, date) values (10000, 100000, 87, 1000, 22, '2025-07-01')
@@ -56,10 +56,10 @@ insert into exporter_sale(company_amount, employee_amount, level, quantity, user
 insert into exporter_sale(company_amount, employee_amount, level, quantity, user_id, date) values (10000, 100000, 87, 1000, 6, '2025-07-01')
 insert into exporter_sale(company_amount, employee_amount, level, quantity, user_id, date) values (10000, 100000, 87, 1000, 29, '2025-07-01')
 
+insert into customer_sale(amount, contract_id, product_id, quantity, type_of_sale, user_id, date) values (7000, null, 1, 100, 0, 1, '2025-07-09')
+insert into customer_sale(amount, contract_id, product_id, quantity, type_of_sale, user_id, date) values (7000, null, 1, 100, 0, 1, '2025-07-08')
 insert into customer_sale(amount, contract_id, product_id, quantity, type_of_sale, user_id, date) values (7000, null, 1, 100, 0, 1, '2025-07-01')
-insert into customer_sale(amount, contract_id, product_id, quantity, type_of_sale, user_id, date) values (7000, null, 1, 100, 0, 1, '2025-06-28')
-insert into customer_sale(amount, contract_id, product_id, quantity, type_of_sale, user_id, date) values (7000, null, 1, 100, 0, 1, '2025-07-01')
-insert into customer_sale(amount, contract_id, product_id, quantity, type_of_sale, user_id, date) values (3500, null, 1, 100, 1, 1, '2025-06-28')
+insert into customer_sale(amount, contract_id, product_id, quantity, type_of_sale, user_id, date) values (3500, null, 1, 100, 1, 1, '2025-07-08')
 insert into customer_sale(amount, contract_id, product_id, quantity, type_of_sale, user_id, date) values (3500, null, 1, 100, 1, 1, '2025-07-01')
 insert into customer_sale(amount, contract_id, product_id, quantity, type_of_sale, user_id, date) values (7000, null, 2, 100, 0, 12, '2025-07-01')
 insert into customer_sale(amount, contract_id, product_id, quantity, type_of_sale, user_id, date) values (7000, null, 1, 100, 1, 9, '2025-07-01')
